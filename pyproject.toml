@@ -17,6 +17,7 @@ dependencies = [
   "lxml>=5.2",
   "pyyaml>=6.0",
   "bezel-charts>=1.11.0",
+  "markdown>=3.6",
 ]
 
 [project.optional-dependencies]
@@ -29,6 +30,9 @@ Repository = "https://github.com/ShazMoghaddam/wall-street-in-charts"
 
 [tool.setuptools]
 packages = ["wallstreet"]
+
+[tool.setuptools.package-data]
+wallstreet = ["templates/*.html"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -540,21 +540,32 @@ def clean_vs_oil_combo(theme: str) -> bc.Chart:
 
 
 def share_parts(row: pd.Series) -> dict[str, float]:
-    """Each firm's share in %, rounded once so parts and total always agree."""
-    return {F.short_name(f): round(float(row[f]) * 100, 2) for f in F.FUND_MANAGERS}
+    """Each firm's share in % to one decimal, adding up exactly to the rounded total.
+
+    Plain rounding can make 6.87 + 8.21 + 3.57 show as 18.7 when the total is
+    18.6, so the leftover tenths go to the parts that lost the most in rounding.
+    """
+    exact = {F.short_name(f): float(row[f]) * 100 for f in F.FUND_MANAGERS}
+    total = round(sum(exact.values()), 1)
+    tenths = {k: int(v * 10) for k, v in exact.items()}
+    spare = round(total * 10) - sum(tenths.values())
+    for k in sorted(exact, key=lambda k: exact[k] * 10 - tenths[k], reverse=True)[:spare]:
+        tenths[k] += 1
+    return {k: v / 10 for k, v in tenths.items()}
 
 
 def market_share_gauge(theme: str) -> bc.Chart:
     share = F.big_three_market_share()
-    now = round(sum(share_parts(share.iloc[-1]).values()), 2)
-    then = round(sum(share_parts(share.iloc[0]).values()), 2)
+    first_year_end = share[share.index.str.endswith("12-31")].iloc[0]
+    now = round(sum(share_parts(share.iloc[-1]).values()), 1)
+    then = round(sum(share_parts(first_year_end).values()), 1)
     return bc.gauge(
         now,
         min=0,
         max=30,
         label="of US public company shares",
         suffix="%",
-        decimals=2,
+        decimals=1,
         goal=then,
         heading="Big Three combined · end of 2025 · mark = 2015",
         color=[palette(theme)[0]],
@@ -587,7 +598,7 @@ def market_share_progress(theme: str) -> bc.Chart:
         share_parts(F.big_three_market_share().iloc[-1]),
         max=100,
         suffix="%",
-        decimals=2,
+        decimals=1,
         heading="Of every $100 in US public company shares, the Big Three hold",
         color=firm_colours(F.FUND_MANAGERS, theme),
         theme=theme,
