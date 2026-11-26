@@ -34,4 +34,4 @@ jobs:
         run: |
           python models/run.py
           python findings/build.py
-          git diff --exit-code -- models charts findings README.md
+          git diff --exit-code -- models charts findings docs README.md

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wall Street in Charts</title>
+<meta name="description" content="Six Wall Street giants from SEC filings, 2015 to 2025, with scenarios to 2035. The Big Three hold 19% of US public company shares.">
+<meta name="author" content="Shaz Moghaddam">
+<link rel="canonical" href="https://shazmoghaddam.github.io/wall-street-in-charts/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Wall Street in Charts">
+<meta property="og:description" content="Six Wall Street giants from SEC filings, 2015 to 2025, with scenarios to 2035. The Big Three hold 19% of US public company shares.">
+<meta property="og:url" content="https://shazmoghaddam.github.io/wall-street-in-charts/">
+<meta property="og:image" content="https://shazmoghaddam.github.io/wall-street-in-charts/social-preview.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0E1120">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F6F2; --panel: #FFFFFF; --fg: #16161F; --sub: #5E5D6E; --line: #E4E1D8;
+  --accent: #5B5DE0; --hero: #0E1120; --hero-fg: #F4F4F8; --hero-sub: #A3A1B8;
+  --mono: "JetBrains Mono", ui-monospace, monospace; --sans: Inter, system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0B0D18; --panel: #131628; --fg: #ECECF4; --sub: #A3A1B8; --line: #262A40; --accent: #9FA1FF; }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.65 var(--sans); }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.skip { position: absolute; left: -999px; top: 8px; background: var(--panel); padding: 8px 14px; z-index: 10; }
+.skip:focus { left: 8px; }
+.hero { background: var(--hero); color: var(--hero-fg);
+  background-image: repeating-linear-gradient(0deg, #151A2E 0 1px, transparent 1px 40px); }
+.hero .wrap { max-width: 1180px; margin: 0 auto; padding: 72px 24px 56px; }
+.eyebrow { font: 500 13px/1 var(--mono); letter-spacing: .22em; color: #9FA1FF; text-transform: uppercase; }
+h1 { font-weight: 800; font-size: clamp(44px, 7vw, 84px); line-height: 1.02; letter-spacing: -0.02em; margin: 18px 0 14px; }
+.lede { color: var(--hero-sub); font-size: 19px; max-width: 640px; margin: 0 0 28px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 36px; padding: 0; list-style: none; }
+.chips li { border: 1px solid #2A2E44; border-radius: 99px; padding: 4px 12px 4px 10px; font-size: 14px; }
+.chips li::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--c); margin-right: 8px; }
+.chips .gap { border: 0; padding: 0 6px; } .chips .gap::before { display: none; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.stat { border: 1px solid #2A2E44; border-top: 4px solid var(--c); border-radius: 14px; padding: 16px 18px; background: #12152A; }
+.stat .big { display: block; font-weight: 800; font-size: 34px; line-height: 1.1; color: var(--hero-fg); }
+.stat span:last-child { color: var(--hero-sub); font-size: 14px; }
+.notice { margin-top: 22px; font-size: 14px; color: var(--hero-sub); }
+.layout { max-width: 1180px; margin: 0 auto; padding: 32px 24px 64px; display: grid; grid-template-columns: 260px 1fr; gap: 48px; }
+.layout > * { min-width: 0; }
+nav.toc { position: sticky; top: 20px; align-self: start; font-size: 14px; }
+nav.toc h2 { font: 500 12px var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--sub); margin: 8px 0 12px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; }
+nav.toc a { display: flex; gap: 10px; padding: 7px 10px; border-radius: 8px; color: var(--fg); text-decoration: none; line-height: 1.35; }
+nav.toc a:hover { background: var(--panel); }
+nav.toc a span { font-family: var(--mono); color: var(--accent); min-width: 14px; }
+main section { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 32px 28px; margin: 0 0 28px; scroll-margin-top: 16px; }
+.kicker { font: 500 12px var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin: 0; }
+main h2 { font-size: 30px; line-height: 1.2; letter-spacing: -0.01em; margin: 6px 0 18px; }
+main h3 { font-size: 19px; margin: 28px 0 8px; }
+main picture { display: inline-block; max-width: 100%; margin: 8px 4px 8px 0; vertical-align: top; }
+main img { display: block; max-width: 100%; height: auto; }
+main blockquote { margin: 0 0 18px; padding: 12px 16px; border-left: 4px solid var(--accent); background: var(--bg); border-radius: 0 10px 10px 0; }
+main code { font: 14px var(--mono); background: var(--bg); padding: 1px 5px; border-radius: 5px; }
+main li { margin: 6px 0; }
+footer { border-top: 1px solid var(--line); }
+footer .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 24px 48px; color: var(--sub); font-size: 15px; }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 16px; }
+  nav.toc { position: static; }
+  nav.toc ol { display: flex; overflow-x: auto; gap: 4px; padding-bottom: 6px; }
+  nav.toc a { white-space: nowrap; background: var(--panel); border: 1px solid var(--line); }
+  .chips .gap { display: none; }
+  main section { padding: 22px 16px; }
+  main picture { margin-right: 0; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to the findings</a>
+<header class="hero">
+<div class="wrap">
+<p class="eyebrow">SEC filings · 2015–2025 · scenarios to 2035</p>
+<h1>Wall Street in Charts</h1>
+<p class="lede">How six Wall Street giants grew, made their money, invested and weathered shocks over a decade, and where they could be by 2035. Every number comes from public filings.</p>
+<ul class="chips" aria-label="The six firms">
+<li style="--c:#9FA1FF">JPMorgan</li><li style="--c:#FFC857">Goldman Sachs</li><li style="--c:#7CC4FF">Morgan Stanley</li>
+<li class="gap" aria-hidden="true"></li>
+<li style="--c:#F675A8">BlackRock</li><li style="--c:#5EE6C8">Vanguard</li><li style="--c:#FF8A5B">State Street</li>
+</ul>
+<div class="stats"><div class="stat" style="--c:#9FA1FF"><span class="big">18.6%</span><span>of US public company shares held by the Big Three</span></div><div class="stat" style="--c:#7CC4FF"><span class="big">$182.4bn</span><span>JPMorgan revenue in 2025, more than the other four</span></div><div class="stat" style="--c:#5EE6C8"><span class="big">32%</span><span>of the Big Three&#x27;s holdings in tech, up from 14%</span></div><div class="stat" style="--c:#FFC857"><span class="big">+71%</span><span>JPMorgan interest income, 2021 to 2023</span></div></div>
+<p class="notice">Not financial advice. Holdings cover US-listed shares only, as reported in 13F filings.</p>
+</div>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Contents">
+<h2>Contents</h2>
+<ol><li><a href="#finding-1"><span>1</span>Who grew biggest?</a></li><li><a href="#finding-2"><span>2</span>Where do the banks make their money?</a></li><li><a href="#finding-3"><span>3</span>Where do the fund managers invest?</a></li><li><a href="#finding-4"><span>4</span>Choosing, or just following the market?</a></li><li><a href="#finding-5"><span>5</span>Energy then and now</a></li><li><a href="#finding-6"><span>6</span>How much of the US stock market do the Big Three hold?</a></li><li><a href="#finding-7"><span>7</span>How did profits move when rates rose in 2022?</a></li><li><a href="#finding-8"><span>8</span>Shocks: 2020, the 2022 rate rises and the 2023 bank failures</a></li><li><a href="#finding-9"><span>9</span>Good, middling and bad scenarios to 2030 and 2035</a></li><li><a href="#method"><span>·</span>Data and method</a></li></ol>
+</nav>
+<main id="content">
+<section id="finding-1" aria-labelledby="finding-1-title"><p class="kicker">Finding 1</p><h2 id="finding-1-title">Who grew biggest?</h2><p>Revenue, profit and assets for the five listed firms, 2015 to 2025, plus assets under management (AUM) for the three fund managers.</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f1-revenue-dark.svg">
+  <img src="charts/f1-revenue-light.svg" alt="Revenue by year · $bn: 5 series over 11 points" width="760">
+</picture></p>
+<ul>
+<li><strong>JPMorgan is in a league of its own.</strong> Revenue rose from $93.5bn to $182.4bn, more than the other four firms put together.</li>
+<li><strong>Goldman and Morgan Stanley grew profit fastest.</strong> Goldman's profit is 2.8× its 2015 level and Morgan Stanley's is 2.8×, both ahead of JPMorgan's 2.3×.</li>
+<li><strong>BlackRock doubled its revenue (2.1×) but profit grew less (1.7×),</strong> so its profit margin narrowed.</li>
+<li><strong>State Street grew slowest,</strong> with profit up 1.5×.</li>
+</ul>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f1-profit-growth-dark.svg">
+  <img src="charts/f1-profit-growth-light.svg" alt="Profit 2025 vs 2015 · times bigger: highest Goldman 2.8×. Goldman 2.8×, Morgan Stanley 2.8×, JPMorgan 2.3×, BlackRock 1.7×, State Street 1.5×" width="372">
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f1-vanguard-aum-dark.svg">
+  <img src="charts/f1-vanguard-aum-light.svg" alt="Vanguard AUM · published figures · $T: 1 series over 11 points. Dec 2017 $4.9T, Mar 2019 $5.4T, Nov 2019 $6.0T, Oct 2020 $6.3T, Nov 2021 $8.2T, Dec 2021 $8.5T, Dec 2022 $7.2T, Sep 2023 $7.8T, Dec 2023 $8.6T, Nov 2024 $10.4T, Dec 2025 $12.0T" width="372">
+</picture></p>
+<h3>Assets under management</h3>
+<p>BlackRock's AUM tripled, from $4.6 trillion at the end of 2015 to $14.0 trillion at the end of 2025. State Street's grew from $2.2 trillion to $5.7 trillion. Vanguard is private and publishes AUM only now and then; its latest figure is $12.0 trillion.</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f1-aum-dark.svg">
+  <img src="charts/f1-aum-light.svg" alt="Assets under management · $ trillion: 2 series filled over 44 points" width="760">
+</picture></p>
+<h3>The banks' balance sheets</h3>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f1-assets-jpmorgan-dark.svg">
+  <img src="charts/f1-assets-jpmorgan-light.svg" alt="JPMorgan · total assets: latest $4.42T. 2015 $2.35T, 2016 $2.49T, 2017 $2.53T, 2018 $2.62T, 2019 $2.69T, 2020 $3.38T, 2021 $3.74T, 2022 $3.67T, 2023 $3.88T, 2024 $4.00T, 2025 $4.42T" width="244">
+</picture> <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f1-assets-goldman-dark.svg">
+  <img src="charts/f1-assets-goldman-light.svg" alt="Goldman · total assets: latest $1.81T. 2015 $0.86T, 2016 $0.86T, 2017 $0.92T, 2018 $0.93T, 2019 $0.99T, 2020 $1.16T, 2021 $1.46T, 2022 $1.44T, 2023 $1.64T, 2024 $1.68T, 2025 $1.81T" width="244">
+</picture> <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f1-assets-morgan-stanley-dark.svg">
+  <img src="charts/f1-assets-morgan-stanley-light.svg" alt="Morgan Stanley · total assets: latest $1.42T. 2015 $0.79T, 2016 $0.81T, 2017 $0.85T, 2018 $0.85T, 2019 $0.90T, 2020 $1.12T, 2021 $1.19T, 2022 $1.18T, 2023 $1.19T, 2024 $1.22T, 2025 $1.42T" width="244">
+</picture></p>
+<h3>Notes</h3>
+<ul>
+<li>Revenue for the banks is net of interest expense, the way they report it.</li>
+<li>Profit is net income for the year. AUM is not comparable with the banks' total assets: AUM is clients' money, total assets is the bank's own balance sheet.</li>
+<li>Vanguard's points are only the dates Vanguard (or a press report of Vanguard's figure) published. Gaps are left as gaps. Sources are in <a href="https://github.com/ShazMoghaddam/wall-street-in-charts/blob/main/data/manual/vanguard_aum.csv"><code>data/manual/vanguard_aum.csv</code></a>.</li>
+</ul></section><section id="finding-2" aria-labelledby="finding-2-title"><p class="kicker">Finding 2</p><h2 id="finding-2-title">Where do the banks make their money?</h2><p>Each bank's revenue split into three kinds of business: <strong>Markets</strong> (trading and dealmaking), <strong>Wealth</strong> (wealth and asset management) and <strong>Lending</strong> (consumer and business banking).</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f2-mix-jpmorgan-dark.svg">
+  <img src="charts/f2-mix-jpmorgan-light.svg" alt="JPMorgan · 2025 revenue: total $178.6bn across 3 parts. Markets $78.5bn, Wealth $24.1bn, Lending $76.0bn" width="244">
+</picture> <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f2-mix-goldman-dark.svg">
+  <img src="charts/f2-mix-goldman-light.svg" alt="Goldman · 2025 revenue: total $58.4bn across 3 parts. Markets $41.5bn, Wealth $16.7bn, Lending $0.2bn" width="244">
+</picture> <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f2-mix-morgan-stanley-dark.svg">
+  <img src="charts/f2-mix-morgan-stanley-light.svg" alt="Morgan Stanley · 2025 revenue: total $71.4bn across 2 parts. Markets $33.1bn, Wealth $38.3bn" width="244">
+</picture></p>
+<ul>
+<li><strong>Goldman is still a markets firm.</strong> 71% of its 2025 revenue came from trading and dealmaking. Its push into consumer banking (Marcus, the Apple Card) is being wound down, and lending is now 0%.</li>
+<li><strong>Morgan Stanley is now more wealth manager than trader.</strong> 54% of revenue came from wealth and asset management, after buying E*TRADE (2020) and Eaton Vance (2021).</li>
+<li><strong>JPMorgan is the most balanced:</strong> 44% markets, 43% lending and 13% wealth.</li>
+</ul>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f2-segments-jpmorgan-dark.svg">
+  <img src="charts/f2-segments-jpmorgan-light.svg" alt="JPMorgan · revenue by business and profit margin: 3 bar series stacked and 1 line over 11 points" width="760">
+</picture></p>
+<p><strong>Regrouping:</strong> from 2022, JPMorgan reports its commercial bank inside the investment bank, so part of its lending moves into Markets from that year. The jump in 2022 is a change of grouping, not of business.</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f2-segments-goldman-dark.svg">
+  <img src="charts/f2-segments-goldman-light.svg" alt="Goldman · revenue by business and profit margin: 3 bar series stacked and 1 line over 11 points" width="760">
+</picture></p>
+<p><strong>Regrouping:</strong> Goldman reorganised in 2020 and again in 2022. From 2020 the figures use its current three segments, restated by Goldman.</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f2-segments-morgan-stanley-dark.svg">
+  <img src="charts/f2-segments-morgan-stanley-light.svg" alt="Morgan Stanley · revenue by business and profit margin: 2 bar series stacked and 1 line over 11 points" width="760">
+</picture></p>
+<h3>Notes</h3>
+<ul>
+<li>Segment figures come from each bank's 10-K. Each year uses the newest 10-K that reports it, so years near a reorganisation use restated figures.</li>
+<li>The mapping from each bank's segment names to the three groups is in <a href="https://github.com/ShazMoghaddam/wall-street-in-charts/blob/main/data/manual/segment_map.csv"><code>data/manual/segment_map.csv</code></a>.</li>
+<li>JPMorgan's segment figures are on its 'managed basis' and leave out its corporate centre, so they add up to slightly more or less than reported revenue.</li>
+</ul></section><section id="finding-3" aria-labelledby="finding-3-title"><p class="kicker">Finding 3</p><h2 id="finding-3-title">Where do the fund managers invest?</h2><p>The sector mix of the US-listed shares that BlackRock, Vanguard and State Street report in their 13F filings, combined, at each year-end.</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f3-sector-mix-dark.svg">
+  <img src="charts/f3-sector-mix-light.svg" alt="Big Three · sector mix of their US shares: 11 series stacked over 11 points" width="760">
+</picture></p>
+<ul>
+<li><strong>Technology took over.</strong> It rose from 14% of the Big Three's holdings in 2015 to 32% in 2025, by far the largest sector.</li>
+<li><strong>Most other sectors shrank to make room,</strong> above all health care, consumer staples, real estate and energy.</li>
+<li><strong>They didn't choose this.</strong> It is what happened to the market itself as Apple, Microsoft, Nvidia and the rest grew (see finding 4).</li>
+</ul>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f3-sector-shift-dark.svg">
+  <img src="charts/f3-sector-shift-light.svg" alt="Change in sector share, 2015 to 2025 · points: highest Technology 18.7 pts. Technology 18.7 pts, Consumer discretionary 1.1 pts, Communication 0.9 pts, Utilities −0.7 pts, Materials −1.0 pts, Financials −1.4 pts, Industrials −2.2 pts, Energy −3.0 pts, Real estate −3.3 pts, Consumer staples −4.2 pts, Health care −4.8 pts" width="760">
+</picture></p>
+<h3>Notes</h3>
+<ul>
+<li><strong>US-listed shares only.</strong> 13F filings leave out bonds, cash, private assets and shares listed outside the US.</li>
+<li><strong>Sectors</strong> come from each company's SEC industry code (SIC), grouped into 11 sectors close to the GICS sectors index providers use. The largest holdings were checked by hand (<a href="https://github.com/ShazMoghaddam/wall-street-in-charts/blob/main/data/manual/sector_overrides.csv"><code>data/manual/sector_overrides.csv</code></a>), for example Alphabet and Meta as Communication and Visa as Financials. At least 95% of each firm's value is mapped in every quarter.</li>
+<li><strong>ETFs</strong> held inside the filings are left out of the mix, since each is a basket of other companies.</li>
+</ul></section><section id="finding-4" aria-labelledby="finding-4-title"><p class="kicker">Finding 4</p><h2 id="finding-4-title">Choosing, or just following the market?</h2><p>Each firm's sector mix compared with the 'market': every 13F filer's holdings added up, which is the institutional market (around 4,000 to 9,000 managers a year).</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f4-vs-market-dark.svg">
+  <img src="charts/f4-vs-market-light.svg" alt="Big Three vs the market, 2025 · bar = Big Three, mark = market: 7 of 11 measures at or above target. Technology 32.4%, Financials 13.4%, Health care 10.1%, Industrials 10.2%, Consumer discretionary 9.5%, Communication 8.7%, Consumer staples 4.5%, Energy 3.0%, Real estate 3.0%, Utilities 2.7%, Materials 2.6%" width="760">
+</picture></p>
+<ul>
+<li><strong>They follow the market almost exactly.</strong> In 2025 no firm's sector mix was more than 3% away from the market's (0% would be an exact copy).</li>
+<li><strong>The Big Three hold a little more technology</strong> (32% against 31%), most likely because index funds hold the biggest companies in full, while other managers spread more into smaller ones.</li>
+<li><strong>The one clear tilt was Vanguard's real estate in 2015:</strong> 8% against the market's 5%, from its large property (REIT) index funds.</li>
+</ul>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f4-distance-dark.svg">
+  <img src="charts/f4-distance-light.svg" alt="How far each sector mix is from the market · 0% = exact copy: 3 series over 11 points" width="372">
+</picture></p>
+<h3>How the distance is measured</h3>
+<p>Add up the gaps between a firm's weight and the market's weight in each of the 11 sectors, then halve it. That is the share of the portfolio that would have to move to match the market. 0% is an exact copy; 100% would mean no overlap at all.</p>
+<h3>Notes</h3>
+<ul>
+<li>The market is built from the SEC's bulk 13F data, one year-end per year. Some filers report in the wrong units; those rows are fixed or left out using a price check against the Big Three's own filings (see <a href="https://github.com/ShazMoghaddam/wall-street-in-charts/blob/main/data/README.md"><code>data/README.md</code></a>).</li>
+</ul></section><section id="finding-5" aria-labelledby="finding-5-title"><p class="kicker">Finding 5</p><h2 id="finding-5-title">Energy then and now</h2><p>Oil, gas and coal companies, and a hand-made list of clean energy companies, in the Big Three's holdings since 2015.</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f5-oil-gas-coal-dark.svg">
+  <img src="charts/f5-oil-gas-coal-light.svg" alt="Oil, gas and coal · share of US shares held: 4 series over 11 points" width="760">
+</picture></p>
+<ul>
+<li><strong>Oil, gas and coal halved as a share.</strong> BlackRock went from 5% to 2%, Vanguard from 6% to 3% and State Street from 6% to 3%. The market fell the same way (5% to 3%), so this is falling energy share prices and booming tech, not selling.</li>
+<li><strong>2022 shows it:</strong> energy's share jumped when oil and gas prices spiked after Russia invaded Ukraine, then slid back.</li>
+<li><strong>Clean energy stays tiny.</strong> The Big Three's clean energy holdings peaked at $28.7bn and were $21.8bn at the end of 2025, against $451.6bn in oil, gas and coal.</li>
+</ul>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f5-clean-vs-oil-dark.svg">
+  <img src="charts/f5-clean-vs-oil-light.svg" alt="Big Three · clean energy (bars) vs oil, gas and coal (line) · $bn: 1 bar series and 1 line over 11 points" width="760">
+</picture></p>
+<h3>Notes</h3>
+<ul>
+<li><strong>Oil, gas and coal</strong> is the Energy sector: producers, oil services, refiners, pipelines and coal, by SEC industry code.</li>
+<li><strong>Clean energy</strong> is a list of 31 US-listed companies whose main business is solar, wind, geothermal, fuel cells, storage or renewable power, each with a reason (<a href="https://github.com/ShazMoghaddam/wall-street-in-charts/blob/main/data/manual/clean_energy.csv"><code>data/manual/clean_energy.csv</code></a>). Big utilities with large renewable fleets, such as NextEra Energy, stay in Utilities because most of their business is still a utility.</li>
+<li><strong>Tesla is left out</strong> of clean energy on purpose: it is a carmaker, and at its size it would swamp every other name.</li>
+</ul></section><section id="finding-6" aria-labelledby="finding-6-title"><p class="kicker">Finding 6</p><h2 id="finding-6-title">How much of the US stock market do the Big Three hold?</h2><p>BlackRock, Vanguard and State Street's holdings of company shares, as a share of the total value of all US public company shares (Federal Reserve figures).</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f6-market-share-gauge-dark.svg">
+  <img src="charts/f6-market-share-gauge-light.svg" alt="Big Three combined · end of 2025 · mark = 2015: 18.6% on a scale of 0.0% to 30.0%" width="372">
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f6-top-stakes-dark.svg">
+  <img src="charts/f6-top-stakes-light.svg" alt="Big Three stake in the five biggest holdings · % of shares: Nvidia 21.4%, Apple 21.7%, Microsoft 21.9%, Amazon 18.3%, Alphabet 17.9%" width="372">
+</picture></p>
+<ul>
+<li><strong>Almost a fifth of the market.</strong> Together they held 18.6% of all US public company shares at the end of 2025, up from 14.9% in 2015.</li>
+<li><strong>Vanguard is the largest</strong> (8.2%), then BlackRock (6.9%) and State Street (3.5%).</li>
+<li><strong>In the biggest companies the stake is larger.</strong> The typical (median) Big Three stake in their ~500 largest holdings rose from 18% to 24%. They owned more than a fifth of 399 of those companies in 2025, against 97 in 2015.</li>
+</ul>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f6-market-share-dark.svg">
+  <img src="charts/f6-market-share-light.svg" alt="Share of all US public company shares · %: 3 series stacked over 44 points" width="760">
+</picture></p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f6-market-share-split-dark.svg">
+  <img src="charts/f6-market-share-split-light.svg" alt="Of every $100 in US public company shares, the Big Three hold: 18.6% of 100.0%. BlackRock 6.9%, Vanguard 8.2%, State Street 3.5%" width="760">
+</picture></p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f6-stakes-spread-dark.svg">
+  <img src="charts/f6-stakes-spread-light.svg" alt="Big Three stake across the ~500 largest holdings · share of companies: 2 series, 910 values in 15 ranges from 0.0% to 37.5%, most in 17.5% to 20.0%" width="760">
+</picture></p>
+<h3>Notes</h3>
+<ul>
+<li><strong>Market value</strong> is the Fed's figure for all US public companies' shares (FRED series <code>BOGZ1LM883164115Q</code>). 13F filings also include some foreign companies listed in the US, so the share is a close estimate rather than exact.</li>
+<li><strong>Stakes</strong> divide the Big Three's combined shares by each company's shares outstanding from SEC filings. Share classes are added up (Alphabet A and C). Berkshire Hathaway is left out because one class A share is worth 1,500 class B shares. About 7 to 10% of the largest holdings have no usable share count.</li>
+<li><strong>Holding is not owning outright:</strong> the Big Three hold these shares for the people and pension funds invested in their funds.</li>
+</ul></section><section id="finding-7" aria-labelledby="finding-7-title"><p class="kicker">Finding 7</p><h2 id="finding-7-title">How did profits move when rates rose in 2022?</h2><p>The Federal Reserve raised its main interest rate from an average of 0.08% in 2021 to 5.0% in 2023, the fastest rise in forty years. Here is what happened to profit between 2021 and 2023.</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f7-profit-and-rates-dark.svg">
+  <img src="charts/f7-profit-and-rates-light.svg" alt="Quarterly profit and the Fed's interest rate: 2 bar series and 1 line over 28 points" width="760">
+</picture></p>
+<ul>
+<li><strong>JPMorgan's net interest income jumped 71%,</strong> from $52.3bn to $89.3bn. It earned more on loans while paying little more on deposits. Its profit still rose 3% while the others fell.</li>
+<li><strong>Goldman's profit fell 61%</strong> and Morgan Stanley's 40%. 2021 was a record year for deals; higher rates slowed mergers and share sales, and their interest income barely moved (−2% and +2%).</li>
+<li><strong>Fund managers felt falling markets, not rates.</strong> BlackRock's profit fell 7% as lower share prices cut its fees. State Street's fell 28%, even though its interest income rose 45%.</li>
+</ul>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f7-profit-waterfall-dark.svg">
+  <img src="charts/f7-profit-waterfall-light.svg" alt="Who gained and lost profit, 2021 to 2023: ends at $74.7bn after 7 steps. 2021 profit total $93.6bn, Goldman −$13.1bn, Morgan Stanley −$5.9bn, State Street −$0.7bn, BlackRock −$0.4bn, JPMorgan +$1.2bn, 2023 profit total $74.7bn" width="760">
+</picture></p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f7-net-interest-income-dark.svg">
+  <img src="charts/f7-net-interest-income-light.svg" alt="Net interest income · $bn: 2 series across 4 groups" width="372">
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f7-nii-vs-rates-dark.svg">
+  <img src="charts/f7-nii-vs-rates-light.svg" alt="Net interest income vs the Fed rate: 176 points in 4 groups" width="372">
+</picture></p>
+<h3>Notes</h3>
+<ul>
+<li>Net interest income is interest earned minus interest paid (XBRL tag <code>InterestIncomeExpenseNet</code>). BlackRock does not report it.</li>
+<li>In the scatter, each firm's net interest income is indexed to its 2019 average (= 100), so firms of very different sizes share one scale. Each dot is one quarter.</li>
+</ul></section><section id="finding-8" aria-labelledby="finding-8-title"><p class="kicker">Finding 8</p><h2 id="finding-8-title">Shocks: 2020, the 2022 rate rises and the 2023 bank failures</h2><p>Profit in each shock against the same quarters a year earlier: the first half of 2020, the whole of 2022, and the first half of 2023 (when Silicon Valley Bank, Signature and First Republic failed).</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f8-shocks-dark.svg">
+  <img src="charts/f8-shocks-light.svg" alt="Profit change in each shock vs a year earlier · %: 5 series across 3 groups" width="760">
+</picture></p>
+<ul>
+<li><strong>The pandemic hit the lenders.</strong> JPMorgan's profit fell 60% and Goldman's 66% as they set money aside for loans that might go bad. State Street's rose 21%, helped by busy markets.</li>
+<li><strong>2022 hit almost everyone,</strong> led by Goldman (−48%).</li>
+<li><strong>The 2023 bank failures split the big banks.</strong> JPMorgan's profit rose 60%, helped by higher interest income and by buying First Republic in May 2023. Goldman's fell 35%.</li>
+</ul>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f8-stress-days-2020-dark.svg">
+  <img src="charts/f8-stress-days-2020-light.svg" alt="Days of market stress in 2020 · VIX above 30: 80 days across 365 days" width="760">
+</picture></p>
+<p>The VIX, Wall Street's 'fear gauge', closed above 30 on 80 trading days in 2020 and peaked at 83 on 16 March 2020. It did so on 49 days in 2022 and not once in 2023: the bank failures shook banks far more than the wider market.</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f8-margin-spread-dark.svg">
+  <img src="charts/f8-margin-spread-light.svg" alt="How much quarterly profit margins swing · %: 5 groups, medians from 20.7% to 30.1%" width="760">
+</picture></p>
+<p>Profit margins by quarter, 2015 to 2025. A taller box means a less predictable business. Goldman swings the most.</p>
+<h3>Notes</h3>
+<ul>
+<li>Each shock compares the same quarters a year apart, so seasonal patterns cancel out.</li>
+<li>Days of market stress use FRED's daily VIX close (series <code>VIXCLS</code>).</li>
+</ul></section><section id="finding-9" aria-labelledby="finding-9-title"><p class="kicker">Finding 9</p><h2 id="finding-9-title">Good, middling and bad scenarios to 2030 and 2035</h2><blockquote>
+<p><strong>Not financial advice.</strong> These are illustrations from a deliberately simple model, not predictions or recommendations. The future will not look like any single line here.</p>
+</blockquote>
+<p>Each firm is linked by a simple model to the things that move it: the stock market, interest rates and market volatility. We then run 10,000 simulated futures for those drivers, built from real stretches of history since 1990 (including the 2000, 2008, 2020 and 2022 shocks), and push each one through the firm models. <strong>Bad, middling and good are the 10th, 50th and 90th percentiles</strong> of the results: 1 in 10 futures came out worse than 'bad', and 1 in 10 better than 'good'.</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f9-profit-2035-dark.svg">
+  <img src="charts/f9-profit-2035-light.svg" alt="Profit in 2035 under each scenario · $bn: 4 series across 5 groups" width="760">
+</picture></p>
+<ul>
+<li><strong>JPMorgan stays far ahead.</strong> Its 2035 profit comes out at $49.5bn (bad), $75.0bn (middling) and $109.5bn (good), against $57.0bn in 2025.</li>
+<li><strong>The range is wide, and that is the honest answer.</strong> In the bad case, 2035 profit is below its 2025 level for JPMorgan, Goldman and State Street.</li>
+<li><strong>Goldman and Morgan Stanley have the widest ranges</strong> relative to their size, because trading and dealmaking swing with markets. Goldman's 2035 profit: $14.7bn (bad), $28.4bn (middling) and $49.6bn (good).</li>
+<li><strong>BlackRock's AUM</strong> reaches $33 trillion in the middling case (from $14 trillion), with a range of $21 to $49 trillion.</li>
+</ul>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f9-profit-jpmorgan-dark.svg">
+  <img src="charts/f9-profit-jpmorgan-light.svg" alt="JPMorgan · profit to 2035 · $bn: 3 series over 21 points" width="372">
+</picture> <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f9-profit-goldman-dark.svg">
+  <img src="charts/f9-profit-goldman-light.svg" alt="Goldman · profit to 2035 · $bn: 3 series over 21 points" width="372">
+</picture> <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f9-profit-morgan-stanley-dark.svg">
+  <img src="charts/f9-profit-morgan-stanley-light.svg" alt="Morgan Stanley · profit to 2035 · $bn: 3 series over 21 points" width="372">
+</picture> <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f9-profit-blackrock-dark.svg">
+  <img src="charts/f9-profit-blackrock-light.svg" alt="BlackRock · profit to 2035 · $bn: 3 series over 21 points" width="372">
+</picture> <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f9-profit-state-street-dark.svg">
+  <img src="charts/f9-profit-state-street-light.svg" alt="State Street · profit to 2035 · $bn: 3 series over 21 points" width="372">
+</picture></p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f9-aum-blackrock-dark.svg">
+  <img src="charts/f9-aum-blackrock-light.svg" alt="BlackRock · AUM to 2035 · $T: 3 series over 21 points" width="372">
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f9-aum-state-street-dark.svg">
+  <img src="charts/f9-aum-state-street-light.svg" alt="State Street · AUM to 2035 · $T: 3 series over 21 points" width="372">
+</picture></p>
+<h3>The drivers</h3>
+<p>In the middling case the US stock market's total value grows about as fast as it did from 1990 to 2025 (about 9% a year, including new listings), reaching 2.4 times its 2025 level by 2035. The bad case is 1.2 times and the good case 4.5 times. The Fed funds rate is pulled back towards its long-run level, about 2% as estimated from 1990-2025, with real surprises along the way.</p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f9-market-dark.svg">
+  <img src="charts/f9-market-light.svg" alt="US stock market value in the simulations · 2025 = 100: 3 series over 11 points" width="372">
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f9-rates-dark.svg">
+  <img src="charts/f9-rates-light.svg" alt="Fed funds rate in the simulations · yearly average %: 3 series over 11 points" width="372">
+</picture></p>
+<h3>Backtest: how close did it get?</h3>
+<p>We trained the same models on 2015 to 2020 only, then asked them about 2021 to 2025.</p>
+<ul>
+<li><strong>With the real market and rates fed in</strong>, yearly revenue was off by 5% to 13% on average. Profit is harder: from 9% for JPMorgan to 38% for Goldman, whose 2021 deal boom and 2023 slump no simple model would call.</li>
+<li><strong>With everything simulated</strong>, what actually happened landed inside the bad-to-good range 78% of the time. A well-judged 10th-to-90th range should catch about 80%.</li>
+</ul>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f9-backtest-dark.svg">
+  <img src="charts/f9-backtest-light.svg" alt="Backtest 2021-2025 · bar = model (trained to 2020), mark = what happened: 8 of 10 measures at or above target. BlackRock profit $32bn, BlackRock revenue $110bn, Goldman profit $77bn, Goldman revenue $284bn, JPMorgan profit $228bn, JPMorgan revenue $761bn, Morgan Stanley profit $75bn, Morgan Stanley revenue $325bn, State Street profit $14bn, State Street revenue $72bn" width="760">
+</picture></p>
+<p><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f9-backtest-error-dark.svg">
+  <img src="charts/f9-backtest-error-light.svg" alt="Backtest · average yearly error, 2021-2025 · %: 2 series across 5 groups" width="372">
+</picture></p>
+<h3>How the models work</h3>
+<ul>
+<li><strong>Banks:</strong> net interest income follows interest rates and the size of the market; other revenue (trading, deals, wealth) follows the market and volatility, with quarter-of-year effects; profit margin follows rates and volatility.</li>
+<li><strong>Fund managers:</strong> AUM follows the market plus a steady trend (new client money); revenue follows AUM and rates; profit margin follows rates and volatility.</li>
+<li><strong>Errors are simulated too.</strong> Each model's leftover error persists from quarter to quarter, as it does in real life, so the range reflects how wrong the model has been.</li>
+<li><strong>Vanguard is left out:</strong> its 11 published AUM figures are too few for a model.</li>
+<li>Everything is in <a href="https://github.com/ShazMoghaddam/wall-street-in-charts/blob/main/wallstreet/forecast.py"><code>wallstreet/forecast.py</code></a>; outputs and settings (including the fixed random seed) are in <code>models/</code>.</li>
+</ul>
+<h3>Limits</h3>
+<ul>
+<li>Ten years is a long way. Mergers (like BlackRock's 2024 and 2025 deals), new rules or a new business line can change a firm in ways no driver captures.</li>
+<li>'Good' and 'bad' describe profit and AUM, not whether an outcome is good for anyone else.</li>
+<li>The models are deliberately simple so that every link can be read and checked.</li>
+</ul></section>
+<section id="method" aria-labelledby="method-title">
+<p class="kicker">About</p>
+<h2 id="method-title">Data and method</h2>
+<ul>
+<li><strong>Company results:</strong> SEC XBRL filings (10-K and 10-Q), 2015 to 2025, with Q4 worked out from annual figures.</li>
+<li><strong>Holdings:</strong> SEC 13F filings for BlackRock, Vanguard and State Street, and the SEC's bulk 13F data for the market as a whole. US-listed shares only.</li>
+<li><strong>Markets and rates:</strong> FRED (Federal Reserve Bank of St. Louis).</li>
+<li><strong>Vanguard</strong> is private, so it is judged on its published assets under management and its 13F filings.</li>
+<li><strong>Forecasts:</strong> simple driver models and 10,000 Monte Carlo futures, backtested on 2021 to 2025. Illustrations, not predictions.</li>
+</ul>
+<p>Everything is open: code, data, tests and notebooks are on <a href="https://github.com/ShazMoghaddam/wall-street-in-charts">GitHub</a>. Every chart is drawn with <a href="https://pypi.org/project/bezel-charts/">bezel-charts</a>, an open-source Python library by the same author.</p>
+</section>
+</main>
+</div>
+<footer>
+<div class="wrap">
+<p>Created by <strong>Shaz Moghaddam</strong> · London<br>
+<a href="https://shazmoghaddam.github.io/">Website</a> · <a href="https://www.linkedin.com/in/shazmoghaddam/">LinkedIn</a> · <a href="https://github.com/ShazMoghaddam/wall-street-in-charts">Source on GitHub</a></p>
+<p>Not financial advice. Independent project, not affiliated with any of the firms named.</p>
+</div>
+</footer>
+</body>
+</html>

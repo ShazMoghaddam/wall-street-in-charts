@@ -26,6 +26,7 @@ sys.path.insert(0, str(ROOT))
 
 from wallstreet import charts as C  # noqa: E402
 from wallstreet import findings as F  # noqa: E402
+from wallstreet import site  # noqa: E402
 
 CHARTS = ROOT / "charts"
 FINDINGS = ROOT / "findings"
@@ -364,6 +365,8 @@ def page_energy(n: dict, alts: dict, base: str) -> str:
 
 
 def page_share(n: dict, alts: dict, base: str) -> str:
+    # The same rounding as the charts, so the three parts add up to the total.
+    parts = C.share_parts(F.big_three_market_share().loc["2025-12-31"])
     lines = [
         "# 6. How much of the US stock market do the Big Three hold?",
         "",
@@ -373,12 +376,11 @@ def page_share(n: dict, alts: dict, base: str) -> str:
         picture("f6-market-share-gauge", alts["f6-market-share-gauge"], 372, base),
         picture("f6-top-stakes", alts["f6-top-stakes"], 372, base),
         "",
-        f"- **Almost a fifth of the market.** Together they held {pct(n['big_three_share_2025'])} "
-        f"of all US public company shares at the end of 2025, up from "
-        f"{pct(n['big_three_share_2015'])} in 2015.",
-        f"- **Vanguard is the largest** ({n['vanguard_market_share_2025'] * 100:.1f}%), then "
-        f"BlackRock ({n['blackrock_market_share_2025'] * 100:.1f}%) and State Street "
-        f"({n['state_street_market_share_2025'] * 100:.1f}%).",
+        f"- **Almost a fifth of the market.** Together they held "
+        f"{n['big_three_share_2025'] * 100:.1f}% of all US public company shares at the end of "
+        f"2025, up from {n['big_three_share_2015'] * 100:.1f}% in 2015.",
+        f"- **Vanguard is the largest** ({parts['Vanguard']:.1f}%), then BlackRock "
+        f"({parts['BlackRock']:.1f}%) and State Street ({parts['State Street']:.1f}%).",
         f"- **In the biggest companies the stake is larger.** The typical (median) Big Three stake "
         f"in their ~500 largest holdings rose from {pct(n['median_stake_2015'])} to "
         f"{pct(n['median_stake_2025'])}. They owned more than a fifth of "
@@ -551,8 +553,8 @@ def readme_block(n: dict, alts: dict) -> str:
             f"{pct(n['energy_share_2015'])} to {pct(n['energy_share_2025'])} of their holdings; "
             f"clean energy peaked at just {bn(n['clean_value_peak_bn'])}.",
             f"6. **[The Big Three's share](findings/06-big-three-share.md):** together they held "
-            f"{pct(n['big_three_share_2025'])} of all US public company shares at the end of "
-            f"2025, up from {pct(n['big_three_share_2015'])} in 2015.",
+            f"{n['big_three_share_2025'] * 100:.1f}% of all US public company shares at the end "
+            f"of 2025, up from {n['big_three_share_2015'] * 100:.1f}% in 2015.",
             f"7. **[Rates rose in 2022](findings/07-rates-and-profits.md):** JPMorgan's net "
             f"interest income jumped {pct(n['jpmorgan_nii_change_2021_2023_pct'])} from 2021 to "
             f"2023, while Goldman's profit fell {pct(-n['goldman_profit_change_2021_2023_pct'])}.",
@@ -573,6 +575,38 @@ def readme_block(n: dict, alts: dict) -> str:
     )
 
 
+def site_stats(n: dict) -> list[tuple[str, str, str]]:
+    return [
+        (
+            f"{n['big_three_share_2025'] * 100:.1f}%",
+            "of US public company shares held by the Big Three",
+            "#9FA1FF",
+        ),
+        (
+            bn(n["jpmorgan_revenue_2025_bn"]),
+            "JPMorgan revenue in 2025, more than the other four",
+            "#7CC4FF",
+        ),
+        (
+            pct(n["tech_share_2025"]),
+            f"of the Big Three's holdings in tech, up from {pct(n['tech_share_2015'])}",
+            "#5EE6C8",
+        ),
+        (
+            pct(n["jpmorgan_nii_change_2021_2023_pct"], True),
+            "JPMorgan interest income, 2021 to 2023",
+            "#FFC857",
+        ),
+    ]
+
+
+def site_description(n: dict) -> str:
+    return (
+        "Six Wall Street giants from SEC filings, 2015 to 2025, with scenarios to 2035. "
+        f"The Big Three hold {pct(n['big_three_share_2025'])} of US public company shares."
+    )
+
+
 def main() -> None:
     CHARTS.mkdir(exist_ok=True)
     alts: dict[str, str] = {}
@@ -590,6 +624,12 @@ def main() -> None:
     for filename, builder in PAGES:
         (FINDINGS / filename).write_text(builder(numbers, alts, "../charts"))
         print(f"wrote findings/{filename}")
+
+    site_pages = [
+        (int(filename[:2]), builder(numbers, alts, "charts")) for filename, builder in PAGES
+    ]
+    site.build(site_pages, site_stats(numbers), site_description(numbers))
+    print("wrote docs/index.html (report site)")
 
     readme = README.read_text()
     block = readme_block(numbers, alts)
