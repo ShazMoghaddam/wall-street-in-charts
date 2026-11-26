@@ -52,6 +52,39 @@
           "rows": 132
         }
       ]
+    },
+    "sectors": {
+      "updated": "2026-11-26T16:41:37Z",
+      "outputs": [
+        {
+          "file": "sector_map.csv",
+          "rows": 3125
+        },
+        {
+          "file": "holdings_by_sector.csv",
+          "rows": 1716
+        },
+        {
+          "file": "market_by_sector.csv",
+          "rows": 143
+        },
+        {
+          "file": "market_summary.csv",
+          "rows": 11
+        },
+        {
+          "file": "energy_holdings.csv",
+          "rows": 286
+        },
+        {
+          "file": "clean_energy_matches.csv",
+          "rows": 41
+        },
+        {
+          "file": "big_three_stakes.csv",
+          "rows": 5500
+        }
+      ]
     }
   },
   "period": {

@@ -25,7 +25,16 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from wallstreet import aum, fred, sec_facts, segments, thirteenf  # noqa: E402
+from wallstreet import (  # noqa: E402
+    aum,
+    fred,
+    holdings,
+    market13f,
+    sec_facts,
+    sectors,
+    segments,
+    thirteenf,
+)
 from wallstreet.config import (  # noqa: E402
     MANUAL,
     PROCESSED,
@@ -37,7 +46,7 @@ from wallstreet.config import (  # noqa: E402
 from wallstreet.edgar import list_filings  # noqa: E402
 from wallstreet.http import Fetcher  # noqa: E402
 
-STEPS = ("fundamentals", "fred", "aum", "segments", "holdings")
+STEPS = ("fundamentals", "fred", "aum", "segments", "holdings", "sectors")
 TOP_N = 500
 REFRESHABLE = ("data.sec.gov", "api.stlouisfed.org")
 
@@ -169,6 +178,181 @@ def step_holdings(fx: Fetcher, settings) -> list[dict]:
     ]
 
 
+UNIVERSE_TOP_FIRM = 1000  # map every CUSIP that ranks this high for any firm-quarter
+UNIVERSE_TOP_MARKET = 1500  # or this high in the market at any year-end
+STAKES_TOP = 500
+FRAMES_URL = (
+    "https://data.sec.gov/api/xbrl/frames/dei/EntityCommonStockSharesOutstanding/shares/{p}.json"
+)
+
+
+def shares_outstanding(fx: Fetcher, year: int) -> pd.Series:
+    """Shares outstanding by CIK near a year-end, from the SEC frames API.
+
+    10-K cover pages report shares a few weeks after the year-end, so we take
+    the Q4 frame and fill gaps from the next Q1 frame.
+    """
+    out: dict[int, float] = {}
+    for period in (f"CY{year + 1}Q1I", f"CY{year}Q4I"):
+        for row in fx.get_json(FRAMES_URL.format(p=period))["data"]:
+            out[int(row["cik"])] = float(row["val"])
+    return pd.Series(out)
+
+
+# Berkshire's class A share is worth 1,500 class B shares, so raw share counts
+# can't be added up; its stake is left out.
+STAKES_EXCLUDE_CIK = {1067983}
+
+
+def multi_class_shares(fx: Fetcher, cik: int, year: int) -> float | None:
+    """Total shares for companies the frames API leaves out.
+
+    Companies with several share classes (Alphabet, Meta) report cover-page
+    share counts per class, which the frames API skips. Their balance sheet
+    gives one total: we use year-end shares outstanding, or failing that the
+    average shares behind earnings per share for that year.
+    """
+    try:
+        facts = fx.get_json(sec_facts.FACTS_URL.format(cik=cik))
+    except Exception:  # noqa: BLE001
+        return None
+    gaap = facts.get("facts", {}).get("us-gaap", {})
+    end = f"{year}-12-31"
+    for tag, needs_full_year in (
+        ("CommonStockSharesOutstanding", False),
+        ("WeightedAverageNumberOfSharesOutstandingBasic", True),
+    ):
+        rows = gaap.get(tag, {}).get("units", {}).get("shares", [])
+        rows = [
+            r
+            for r in rows
+            if r["end"] == end
+            and r.get("form") == "10-K"
+            and (not needs_full_year or r.get("start") == f"{year}-01-01")
+        ]
+        if rows:
+            return float(max(rows, key=lambda r: r["filed"])["val"])
+    return None
+
+
+def step_sectors(fx: Fetcher, settings) -> list[dict]:
+    log("sectors: reading full Big Three holdings from the cache")
+    full = holdings.full_holdings(fx, settings)
+    year_ends = [f"{y}-12-31" for y in range(settings.start.year, settings.end.year + 1)]
+
+    log("sectors: building the market (all 13F filers) for each year-end")
+    market, summaries = {}, []
+    for q in year_ends:
+        year = int(q[:4])
+        df, summary = market13f.market_holdings(
+            fx, year, holdings.reference_prices(full, q), holdings.largest_position(full, q)
+        )
+        market[q] = df
+        summaries.append(summary)
+
+    log("sectors: mapping holdings to sectors")
+    full["rank"] = full.groupby(["firm", "quarter_end"])["value_usd"].rank(ascending=False)
+    top_market = pd.concat([df.head(UNIVERSE_TOP_MARKET) for df in market.values()])
+    spellings = top_market.assign(issuer=top_market["names"].str.split("|")).explode("issuer")
+    universe = (
+        pd.concat(
+            [
+                full.loc[full["rank"] <= UNIVERSE_TOP_FIRM, ["cusip", "issuer", "title_of_class"]],
+                top_market[["cusip", "issuer", "title_of_class"]],
+                spellings[["cusip", "issuer", "title_of_class"]],
+            ]
+        )
+        .dropna()
+        .drop_duplicates()
+    )
+    mapping = sectors.map_cusips(fx, universe)
+    sector_of = dict(zip(mapping["cusip"], mapping["sector"], strict=True))
+
+    def by_sector(df: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
+        df = df.assign(sector=df["cusip"].map(sector_of).fillna(sectors.UNMAPPED))
+        out = df.groupby(keys + ["sector"], as_index=False)["value_usd"].sum()
+        out["share"] = out["value_usd"] / out.groupby(keys)["value_usd"].transform("sum")
+        return out
+
+    firm_sectors = by_sector(full, ["firm", "quarter_end"])
+    market_all = pd.concat([df.assign(quarter_end=q) for q, df in market.items()])
+    market_sectors = by_sector(market_all, ["quarter_end"])
+
+    log("sectors: energy holdings")
+    clean_firm = full.assign(company=full["issuer"].map(sectors.clean_energy_name))
+    clean_market = market_all.assign(company=market_all["issuer"].map(sectors.clean_energy_name))
+    energy = []
+    for _who, df, keys in (
+        ("firm", firm_sectors, ["firm", "quarter_end"]),
+        ("market", market_sectors.assign(firm="market"), ["firm", "quarter_end"]),
+    ):
+        oil = df[df["sector"] == "Energy"][keys + ["value_usd", "share"]].assign(
+            group="oil_gas_coal"
+        )
+        energy.append(oil)
+    for df in (clean_firm, clean_market.assign(firm="market")):
+        total = df.groupby(["firm", "quarter_end"])["value_usd"].sum()
+        clean = df[df["company"].notna()].groupby(["firm", "quarter_end"])["value_usd"].sum()
+        clean = clean.reindex(total.index, fill_value=0)
+        energy.append(
+            pd.DataFrame(
+                {"value_usd": clean, "share": clean / total, "group": "clean_energy"}
+            ).reset_index()
+        )
+    energy_df = pd.concat(energy, ignore_index=True)
+    clean_names = (
+        pd.concat([clean_firm, clean_market])
+        .dropna(subset=["company"])
+        .groupby(["company", "issuer"], as_index=False)["value_usd"]
+        .sum()
+    )
+
+    log("sectors: Big Three stakes in the largest companies")
+    stakes = []
+    cik_of = mapping.dropna(subset=["cik"]).set_index("cusip")["cik"].astype(int)
+    for q in year_ends:
+        year = int(q[:4])
+        outstanding = shares_outstanding(fx, year)
+        snap = full[full["quarter_end"] == q]
+        combined = snap.groupby("cusip").agg(
+            issuer=("issuer", "first"), value_usd=("value_usd", "sum"), shares=("shares", "sum")
+        )
+        for firm in holdings.FUND_MANAGERS:
+            combined[f"shares_{firm}"] = (
+                snap[snap["firm"] == firm].set_index("cusip")["shares"].reindex(combined.index)
+            )
+        combined["sector"] = combined.index.map(sector_of).fillna(sectors.UNMAPPED)
+        combined = combined[combined["sector"] != sectors.FUNDS]
+        combined = combined.sort_values("value_usd", ascending=False).head(STAKES_TOP)
+        combined["cik"] = combined.index.map(cik_of)
+        # Companies with several share classes (one CIK, several CUSIPs) add up.
+        by_cik = combined.groupby("cik")["shares"].transform("sum")
+        combined["shares_outstanding"] = combined["cik"].map(outstanding)
+        missing = combined["shares_outstanding"].isna() & combined["cik"].notna()
+        for cik in combined.loc[missing, "cik"].unique()[:40]:
+            if int(cik) in STAKES_EXCLUDE_CIK:
+                continue
+            total = multi_class_shares(fx, int(cik), year)
+            if total:
+                combined.loc[combined["cik"] == cik, "shares_outstanding"] = total
+        combined["stake"] = by_cik / combined["shares_outstanding"]
+        combined = combined.reset_index().assign(quarter_end=q)
+        stakes.append(combined)
+    stakes_df = pd.concat(stakes, ignore_index=True)
+    # A stake above 60% means mismatched share counts (e.g. one class only); drop it.
+    stakes_df.loc[stakes_df["stake"] > 0.6, "stake"] = float("nan")
+
+    return [
+        write(mapping.sort_values("cusip"), "sector_map.csv"),
+        write(firm_sectors, "holdings_by_sector.csv"),
+        write(market_sectors, "market_by_sector.csv"),
+        write(pd.DataFrame(summaries), "market_summary.csv"),
+        write(energy_df, "energy_holdings.csv"),
+        write(clean_names.sort_values("value_usd", ascending=False), "clean_energy_matches.csv"),
+        write(stakes_df, "big_three_stakes.csv"),
+    ]
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--only", nargs="+", choices=STEPS, help="run only these steps")
@@ -189,6 +373,7 @@ def main(argv: list[str] | None = None) -> None:
         "aum": step_aum,
         "segments": step_segments,
         "holdings": step_holdings,
+        "sectors": step_sectors,
     }
     manifest_path = PROCESSED / "manifest.json"
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {"steps": {}}

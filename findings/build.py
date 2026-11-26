@@ -259,9 +259,160 @@ def page_shocks(n: dict, alts: dict, base: str) -> str:
     return "\n".join(lines) + "\n"
 
 
+def page_sectors(n: dict, alts: dict, base: str) -> str:
+    lines = [
+        "# 3. Where do the fund managers invest?",
+        "",
+        "The sector mix of the US-listed shares that BlackRock, Vanguard and State Street "
+        "report in their 13F filings, combined, at each year-end.",
+        "",
+        picture("f3-sector-mix", alts["f3-sector-mix"], 760, base),
+        "",
+        f"- **Technology took over.** It rose from {pct(n['tech_share_2015'])} of the Big Three's "
+        f"holdings in 2015 to {pct(n['tech_share_2025'])} in 2025, by far the largest sector.",
+        f"- **Most other sectors shrank to make room,** above all {n['biggest_fallers']}.",
+        "- **They didn't choose this.** It is what happened to the market itself as Apple, "
+        "Microsoft, Nvidia and the rest grew (see finding 4).",
+        "",
+        picture("f3-sector-shift", alts["f3-sector-shift"], 760, base),
+        "",
+        "## Notes",
+        "",
+        "- **US-listed shares only.** 13F filings leave out bonds, cash, private assets and "
+        "shares listed outside the US.",
+        f"- **Sectors** come from each company's SEC industry code (SIC), grouped into 11 "
+        f"sectors close to the GICS sectors index providers use. The largest holdings were "
+        f"checked by hand (`data/manual/sector_overrides.csv`), for example Alphabet and Meta "
+        f"as Communication and Visa as Financials. At least {pct(n['mapped_share_min'])} of "
+        f"each firm's value is mapped in every quarter.",
+        "- **ETFs** held inside the filings are left out of the mix, since each is a basket "
+        "of other companies.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def page_following(n: dict, alts: dict, base: str) -> str:
+    lines = [
+        "# 4. Choosing, or just following the market?",
+        "",
+        "Each firm's sector mix compared with the 'market': every 13F filer's holdings added "
+        "up, which is the institutional market (around 4,000 to 9,000 managers a year).",
+        "",
+        picture("f4-vs-market", alts["f4-vs-market"], 760, base),
+        "",
+        f"- **They follow the market almost exactly.** In 2025 no firm's sector mix was more "
+        f"than {pct(n['max_distance_2025'])} away from the market's (0% would be an exact copy).",
+        f"- **The Big Three hold a little more technology** ({pct(n['tech_share_2025'])} against "
+        f"{pct(n['market_tech_share_2025'])}), most likely because index funds hold the "
+        f"biggest companies in full, while other managers spread more into smaller ones.",
+        f"- **The one clear tilt was Vanguard's real estate in 2015:** "
+        f"{pct(n['vanguard_real_estate_2015'])} against the market's "
+        f"{pct(n['market_real_estate_2015'])}, from its large property (REIT) index funds.",
+        "",
+        picture("f4-distance", alts["f4-distance"], 372, base),
+        "",
+        "## How the distance is measured",
+        "",
+        "Add up the gaps between a firm's weight and the market's weight in each of the 11 "
+        "sectors, then halve it. That is the share of the portfolio that would have to move "
+        "to match the market. 0% is an exact copy; 100% would mean no overlap at all.",
+        "",
+        "## Notes",
+        "",
+        "- The market is built from the SEC's bulk 13F data, one year-end per year. Some "
+        "filers report in the wrong units; those rows are fixed or left out using a price "
+        "check against the Big Three's own filings (see `data/README.md`).",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def page_energy(n: dict, alts: dict, base: str) -> str:
+    lines = [
+        "# 5. Energy then and now",
+        "",
+        "Oil, gas and coal companies, and a hand-made list of clean energy companies, in the "
+        "Big Three's holdings since 2015.",
+        "",
+        picture("f5-oil-gas-coal", alts["f5-oil-gas-coal"], 760, base),
+        "",
+        f"- **Oil, gas and coal halved as a share.** BlackRock went from "
+        f"{pct(n['blackrock_oil_2015'])} to {pct(n['blackrock_oil_2025'])}, Vanguard from "
+        f"{pct(n['vanguard_oil_2015'])} to {pct(n['vanguard_oil_2025'])} and State Street from "
+        f"{pct(n['state_street_oil_2015'])} to {pct(n['state_street_oil_2025'])}. The market "
+        f"fell the same way ({pct(n['market_oil_2015'])} to {pct(n['market_oil_2025'])}), so "
+        f"this is falling energy share prices and booming tech, not selling.",
+        "- **2022 shows it:** energy's share jumped when oil and gas prices spiked after Russia "
+        "invaded Ukraine, then slid back.",
+        f"- **Clean energy stays tiny.** The Big Three's clean energy holdings peaked at "
+        f"{bn(n['clean_value_peak_bn'])} and were {bn(n['clean_value_2025_bn'])} at the end of "
+        f"2025, against {bn(n['oil_value_2025_bn'])} in oil, gas and coal.",
+        "",
+        picture("f5-clean-vs-oil", alts["f5-clean-vs-oil"], 760, base),
+        "",
+        "## Notes",
+        "",
+        "- **Oil, gas and coal** is the Energy sector: producers, oil services, refiners, "
+        "pipelines and coal, by SEC industry code.",
+        "- **Clean energy** is a list of 31 US-listed companies whose main business is "
+        "solar, wind, geothermal, fuel cells, storage or renewable power, each with a reason "
+        "(`data/manual/clean_energy.csv`). Big utilities with large renewable fleets, such as "
+        "NextEra Energy, stay in Utilities because most of their business is still a utility.",
+        "- **Tesla is left out** of clean energy on purpose: it is a carmaker, and at its "
+        "size it would swamp every other name.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def page_share(n: dict, alts: dict, base: str) -> str:
+    lines = [
+        "# 6. How much of the US stock market do the Big Three hold?",
+        "",
+        "BlackRock, Vanguard and State Street's holdings of company shares, as a share of the "
+        "total value of all US public company shares (Federal Reserve figures).",
+        "",
+        picture("f6-market-share-gauge", alts["f6-market-share-gauge"], 372, base),
+        picture("f6-top-stakes", alts["f6-top-stakes"], 372, base),
+        "",
+        f"- **Almost a fifth of the market.** Together they held {pct(n['big_three_share_2025'])} "
+        f"of all US public company shares at the end of 2025, up from "
+        f"{pct(n['big_three_share_2015'])} in 2015.",
+        f"- **Vanguard is the largest** ({n['vanguard_market_share_2025'] * 100:.1f}%), then "
+        f"BlackRock ({n['blackrock_market_share_2025'] * 100:.1f}%) and State Street "
+        f"({n['state_street_market_share_2025'] * 100:.1f}%).",
+        f"- **In the biggest companies the stake is larger.** The typical (median) Big Three stake "
+        f"in their ~500 largest holdings rose from {pct(n['median_stake_2015'])} to "
+        f"{pct(n['median_stake_2025'])}. They owned more than a fifth of "
+        f"{n['stakes_over_20pct_2025']} of those companies in 2025, against "
+        f"{n['stakes_over_20pct_2015']} in 2015.",
+        "",
+        picture("f6-market-share", alts["f6-market-share"], 760, base),
+        "",
+        picture("f6-market-share-split", alts["f6-market-share-split"], 760, base),
+        "",
+        picture("f6-stakes-spread", alts["f6-stakes-spread"], 760, base),
+        "",
+        "## Notes",
+        "",
+        "- **Market value** is the Fed's figure for all US public companies' shares "
+        "(FRED series `BOGZ1LM883164115Q`). 13F filings also include some foreign companies "
+        "listed in the US, so the share is a close estimate rather than exact.",
+        "- **Stakes** divide the Big Three's combined shares by each company's shares "
+        "outstanding from SEC filings. Share classes are added up (Alphabet A and C). "
+        "Berkshire Hathaway is left out because one class A share is worth 1,500 class B "
+        "shares. About 7 to 10% of the largest holdings have no usable share count.",
+        "- **Holding is not owning outright:** the Big Three hold these shares for the people "
+        "and pension funds invested in their funds.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
 PAGES = [
     ("01-who-grew-biggest.md", page_growth),
     ("02-where-banks-make-money.md", page_segments),
+    ("03-where-fund-managers-invest.md", page_sectors),
+    ("04-choosing-or-following.md", page_following),
+    ("05-energy.md", page_energy),
+    ("06-big-three-share.md", page_share),
     ("07-rates-and-profits.md", page_rates),
     ("08-shocks.md", page_shocks),
 ]
@@ -285,16 +436,28 @@ def readme_block(n: dict, alts: dict) -> str:
             f"Goldman still earns {pct(n['goldman_markets_dealmaking_share_2025'])} of revenue "
             f"from markets; Morgan Stanley now earns most of its revenue "
             f"({pct(n['morgan_stanley_wealth_asset_management_share_2025'])}) from wealth.",
-            f"3. **[Rates rose in 2022](findings/07-rates-and-profits.md):** JPMorgan's net "
+            f"3. **[Where the fund managers invest](findings/03-where-fund-managers-invest.md):** "
+            f"technology rose from {pct(n['tech_share_2015'])} to {pct(n['tech_share_2025'])} "
+            f"of the Big Three's US shares.",
+            f"4. **[Choosing or following?](findings/04-choosing-or-following.md):** following. "
+            f"No firm's sector mix was more than {pct(n['max_distance_2025'])} away from the "
+            f"market's in 2025.",
+            f"5. **[Energy](findings/05-energy.md):** oil, gas and coal fell from about "
+            f"{pct(n['energy_share_2015'])} to {pct(n['energy_share_2025'])} of their holdings; "
+            f"clean energy peaked at just {bn(n['clean_value_peak_bn'])}.",
+            f"6. **[The Big Three's share](findings/06-big-three-share.md):** together they held "
+            f"{pct(n['big_three_share_2025'])} of all US public company shares at the end of "
+            f"2025, up from {pct(n['big_three_share_2015'])} in 2015.",
+            f"7. **[Rates rose in 2022](findings/07-rates-and-profits.md):** JPMorgan's net "
             f"interest income jumped {pct(n['jpmorgan_nii_change_2021_2023_pct'])} from 2021 to "
             f"2023, while Goldman's profit fell {pct(-n['goldman_profit_change_2021_2023_pct'])}.",
-            f"4. **[Shocks](findings/08-shocks.md):** the pandemic cut JPMorgan's first-half "
+            f"8. **[Shocks](findings/08-shocks.md):** the pandemic cut JPMorgan's first-half "
             f"profit by {pct(-n['jpmorgan_covid_change_pct'])}; the 2023 bank failures lifted it "
             f"{pct(n['jpmorgan_banks_change_pct'])}.",
             "",
-            picture("f7-profit-and-rates", alts["f7-profit-and-rates"], 760),
+            picture("f6-market-share", alts["f6-market-share"], 760),
             "",
-            "Findings 3 to 6 (holdings and sectors) and 9 (forecasts) arrive in later stages.",
+            "Finding 9 (scenarios to 2030 and 2035) arrives with the forecasts in stage 4.",
             END,
         ]
     )

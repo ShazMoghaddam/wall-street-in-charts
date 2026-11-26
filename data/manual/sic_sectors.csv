@@ -1,0 +1,65 @@
+sic_from,sic_to,sector,note
+100,999,Consumer staples,Agriculture
+1000,1099,Materials,Metal mining
+1200,1299,Energy,Coal
+1300,1399,Energy,Oil and gas extraction and services
+1400,1499,Materials,Non-metal minerals
+1500,1799,Industrials,Construction
+2000,2199,Consumer staples,Food drink and tobacco
+2200,2399,Consumer discretionary,Textiles and apparel
+2400,2499,Materials,Lumber and wood
+2500,2599,Consumer discretionary,Furniture
+2600,2699,Materials,Paper
+2700,2799,Communication,Printing and publishing
+2800,2899,Materials,Chemicals
+2830,2836,Health care,Pharmaceuticals and biotech
+2840,2844,Consumer staples,Soap and cosmetics
+2900,2999,Energy,Petroleum refining
+3000,3099,Materials,Rubber and plastics
+3100,3199,Consumer discretionary,Leather goods
+3200,3399,Materials,Stone glass and metals
+3400,3569,Industrials,Fabricated metal and machinery
+3570,3579,Technology,Computers and office equipment
+3580,3629,Industrials,Machinery and electrical equipment
+3630,3639,Consumer discretionary,Household appliances
+3640,3649,Industrials,Lighting
+3650,3652,Consumer discretionary,Household audio and video
+3660,3679,Technology,Communications equipment and semiconductors
+3690,3699,Industrials,Other electrical equipment
+3710,3716,Consumer discretionary,Motor vehicles
+3720,3799,Industrials,Aerospace and transport equipment
+3812,3812,Industrials,Defence electronics
+3820,3829,Technology,Instruments
+3840,3851,Health care,Medical instruments
+3860,3861,Technology,Photographic equipment
+3870,3999,Consumer discretionary,Other manufacturing
+4000,4799,Industrials,Transport
+4800,4899,Communication,Telecoms and broadcasting
+4900,4999,Utilities,Utilities
+4922,4923,Energy,Gas pipelines
+5000,5199,Industrials,Wholesale
+5122,5122,Health care,Drug wholesale
+5140,5149,Consumer staples,Food wholesale
+5170,5172,Energy,Petroleum wholesale
+5200,5999,Consumer discretionary,Retail
+5330,5331,Consumer staples,Variety stores (Walmart Costco Target)
+5400,5499,Consumer staples,Food stores
+5912,5912,Consumer staples,Drug stores
+6000,6799,Financials,Finance and insurance
+6500,6599,Real estate,Real estate
+6798,6798,Real estate,REITs
+7000,7099,Consumer discretionary,Hotels
+7200,7299,Consumer discretionary,Personal services
+7300,7399,Industrials,Business services
+7370,7379,Technology,Software and IT services
+7500,7599,Consumer discretionary,Auto services
+7800,7899,Communication,Film and video
+7900,7999,Consumer discretionary,Leisure
+8000,8099,Health care,Health services
+8200,8299,Consumer discretionary,Education
+8700,8799,Industrials,Engineering and research services
+8731,8731,Health care,Biological research
+3021,3021,Consumer discretionary,Footwear
+3826,3826,Health care,Laboratory instruments
+6324,6324,Health care,Health insurers
+4950,4959,Industrials,Waste management
