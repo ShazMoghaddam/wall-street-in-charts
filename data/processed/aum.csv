@@ -1,0 +1,98 @@
+firm,as_of,aum_trillion_usd,source,reference
+blackrock,2015-03-31,4.774192,SEC 8-K earnings release,0001193125-15-132373
+blackrock,2015-06-30,4.721294,SEC 8-K earnings release,0001193125-15-253067
+blackrock,2015-09-30,4.505721,SEC 8-K earnings release,0001193125-15-343326
+blackrock,2015-12-31,4.645412,SEC 8-K earnings release,0001193125-16-430525
+blackrock,2016-03-31,4.737165,SEC 8-K earnings release,0001193125-16-540764
+blackrock,2016-06-30,4.890121,SEC 8-K earnings release,0001193125-16-647832
+blackrock,2016-09-30,5.117421,SEC 8-K earnings release,0001193125-16-740254
+blackrock,2016-12-31,5.147852,SEC 8-K earnings release,0001193125-17-009387
+blackrock,2017-03-31,5.420477,SEC 8-K earnings release,0001193125-17-128135
+blackrock,2017-06-30,5.689273,SEC 8-K earnings release,0000950123-17-006151
+blackrock,2017-09-30,5.976892,SEC 8-K earnings release,0001564590-17-019389
+blackrock,2017-12-31,6.288195,SEC 8-K earnings release,0001564590-18-000432
+blackrock,2018-03-31,6.316984,SEC 8-K earnings release,0001564590-18-008028
+blackrock,2018-06-30,6.299706,SEC 8-K earnings release,0001564590-18-016854
+blackrock,2018-09-30,6.4441,SEC 8-K earnings release,0001564590-18-024298
+blackrock,2018-12-31,5.975818,SEC 8-K earnings release,0001564590-19-000682
+blackrock,2019-03-31,6.515345,SEC 8-K earnings release,0001564590-19-011670
+blackrock,2019-06-30,6.842482,SEC 8-K earnings release,0001564590-19-025278
+blackrock,2019-09-30,6.963932,SEC 8-K earnings release,0001564590-19-036898
+blackrock,2019-12-31,7.429633,SEC 8-K earnings release,0001564590-20-001144
+blackrock,2020-03-31,6.466668,SEC 8-K earnings release,0001564590-20-016955
+blackrock,2020-06-30,7.317949,SEC 8-K earnings release,0001564590-20-032541
+blackrock,2020-09-30,7.808497,SEC 8-K earnings release,0001564590-20-046252
+blackrock,2020-12-31,8.67668,SEC 8-K earnings release,0001564590-21-001137
+blackrock,2021-03-31,9.007411,SEC 8-K earnings release,0001564590-21-018904
+blackrock,2021-06-30,9.495993,SEC 8-K earnings release,0001564590-21-036497
+blackrock,2021-09-30,9.463662,SEC 8-K earnings release,0001564590-21-050661
+blackrock,2021-12-31,10.010143,SEC 8-K earnings release,0001564590-22-001270
+blackrock,2022-03-31,9.569513,SEC 8-K earnings release,0001564590-22-014283
+blackrock,2022-06-30,8.48741,SEC 8-K earnings release,0001564590-22-025811
+blackrock,2022-09-30,7.961373,SEC 8-K earnings release,0001564590-22-034147
+blackrock,2022-12-31,8.594485,SEC 8-K earnings release,0001564590-23-000399
+blackrock,2023-03-31,9.090271,SEC 8-K earnings release,0001564590-23-005711
+blackrock,2023-06-30,9.425212,SEC 8-K earnings release,0000950170-23-032924
+blackrock,2023-09-30,9.100825,SEC 8-K earnings release,0000950170-23-053207
+blackrock,2023-12-31,10.008995,SEC 8-K earnings release,0000950170-24-004107
+blackrock,2024-03-31,10.4725,SEC 8-K earnings release,0000950170-24-043859
+blackrock,2024-06-30,10.645721,SEC 8-K earnings release,0000950170-24-083381
+blackrock,2024-09-30,11.475362,SEC 8-K earnings release,0000950170-24-114208
+blackrock,2024-12-31,11.551251,SEC 8-K earnings release,0000950170-25-005629
+blackrock,2025-03-31,11.583928,SEC 8-K earnings release,0000950170-25-053022
+blackrock,2025-06-30,12.52759,SEC 8-K earnings release,0000950170-25-095711
+blackrock,2025-09-30,13.463625,SEC 8-K earnings release,0001193125-25-237960
+blackrock,2025-12-31,14.041518,SEC 8-K earnings release,0001193125-26-013503
+state_street,2015-03-31,2.443,SEC 8-K earnings release,0000093751-15-000101
+state_street,2015-06-30,2.374,SEC 8-K earnings release,0000093751-15-000176
+state_street,2015-09-30,2.203,SEC 8-K earnings release,0000093751-15-000217
+state_street,2015-12-31,2.245,SEC 8-K earnings release,0000093751-16-000271
+state_street,2016-03-31,2.296,SEC 8-K earnings release,0000093751-16-000577
+state_street,2016-06-30,2.301,SEC 8-K earnings release,0000093751-16-000645
+state_street,2016-09-30,2.446,SEC 8-K earnings release,0000093751-16-000694
+state_street,2016-12-31,2.468,SEC 8-K earnings release,0000093751-17-000018
+state_street,2017-03-31,2.561,SEC 8-K earnings release,0000093751-17-000333
+state_street,2017-06-30,2.606,SEC 8-K earnings release,0000093751-17-000426
+state_street,2017-09-30,2.673,SEC 8-K earnings release,0000093751-17-000471
+state_street,2017-12-31,2.782,SEC 8-K earnings release,0000093751-18-000006
+state_street,2018-03-31,2.729,SEC 8-K earnings release,0000093751-18-000362
+state_street,2018-06-30,2.723,SEC 8-K earnings release,0000093751-18-000432
+state_street,2018-09-30,2.81,SEC 8-K earnings release,0000093751-18-000471
+state_street,2018-12-31,2.511,SEC 8-K earnings release,0000093751-19-000005
+state_street,2019-03-31,2.805,SEC 8-K earnings release,0000093751-19-000383
+state_street,2019-06-30,2.918,SEC 8-K earnings release,0000093751-19-000501
+state_street,2019-09-30,2.953,SEC 8-K earnings release,0000093751-19-000588
+state_street,2019-12-31,3.116,SEC 8-K earnings release,0000093751-20-000006
+state_street,2020-03-31,2.689,SEC 8-K earnings release,0000093751-20-000757
+state_street,2020-06-30,3.054,SEC 8-K earnings release,0000093751-20-000902
+state_street,2020-09-30,3.148,SEC 8-K earnings release,0000093751-20-000973
+state_street,2020-12-31,3.467,SEC 8-K earnings release,0000093751-21-000015
+state_street,2021-03-31,3.591,SEC 8-K earnings release,0000093751-21-000534
+state_street,2021-06-30,3.897,SEC 8-K earnings release,0000093751-21-000631
+state_street,2021-09-30,3.862,SEC 8-K earnings release,0000093751-21-000688
+state_street,2021-12-31,4.138,SEC 8-K earnings release,0000093751-22-000013
+state_street,2022-03-31,4.022,SEC 8-K earnings release,0000093751-22-000496
+state_street,2022-06-30,3.475,SEC 8-K earnings release,0000093751-22-000578
+state_street,2022-09-30,3.265,SEC 8-K earnings release,0000093751-22-000614
+state_street,2022-12-31,3.481,SEC 8-K earnings release,0000093751-23-000016
+state_street,2023-03-31,3.618,SEC 8-K earnings release,0000093751-23-000550
+state_street,2023-06-30,3.797,SEC 8-K earnings release,0000093751-23-000639
+state_street,2023-09-30,3.687,SEC 8-K earnings release,0000093751-23-000690
+state_street,2023-12-31,4.128,SEC 8-K earnings release,0000093751-24-000022
+state_street,2024-03-31,4.336,SEC 8-K earnings release,0000093751-24-000584
+state_street,2024-06-30,4.415,SEC 8-K earnings release,0000093751-24-000662
+state_street,2024-09-30,4.732,SEC 8-K earnings release,0000093751-24-000722
+state_street,2024-12-31,4.715,SEC 8-K earnings release,0000093751-25-000004
+state_street,2025-03-31,4.665,SEC 8-K earnings release,0000093751-25-000220
+state_street,2025-06-30,5.117,SEC 8-K earnings release,0000093751-25-000403
+state_street,2025-09-30,5.446,SEC 8-K earnings release,0000093751-25-000560
+state_street,2025-12-31,5.665,SEC 8-K earnings release,0000093751-26-000008
+vanguard,2017-12-31,4.9,Vanguard published figure (press report),https://www.businessinsider.in/theres-one-clear-winner-in-the-asset-management-business-in-2018-and-it-shows-how-the-industrys-changing/amp_articleshow/67328383.cms
+vanguard,2019-03-31,5.4,Vanguard published figure (Vanguard statement),https://externalcrewnet.vanguard.com/content/corporatesite/us/en/corp/who-we-are/pressroom/Press-Release-Vanguard-Receives-Exemplary-Stewardship-Award-051019.html
+vanguard,2020-10-31,6.3,Vanguard published figure (Vanguard statement),https://corporate.vanguard.com/content/corporatesite/us/en/corp/who-we-are/pressroom/How-America-Invests-20-12-3-20.html
+vanguard,2021-11-30,8.2,Vanguard published figure (Vanguard statement),https://www.sec.gov/Archives/edgar/data/1120543/000113743922000026/vvff425012022.htm
+vanguard,2021-12-31,8.5,Vanguard published figure (Vanguard statement),https://www.thinkadvisor.com/2023/01/27/vanguard-net-inflows-drop-nearly-50-in-tough-2022-market/
+vanguard,2022-12-31,7.2,Vanguard published figure (Vanguard statement),https://www.thinkadvisor.com/2023/01/27/vanguard-net-inflows-drop-nearly-50-in-tough-2022-market/
+vanguard,2023-09-30,7.8,Vanguard published figure (Vanguard statement),https://marketing.vanguard.com/content/dam/corp/what-we-care-about/pdf/2023_dei_report_final.pdf
+vanguard,2024-11-30,10.4,Vanguard published figure (press report),https://finance.yahoo.com/news/vanguard-slashes-fees-expects-investors-164635421.html
+vanguard,2025-12-31,12.0,Vanguard published figure (press report),https://altss.com/profile/vanguard-group.md

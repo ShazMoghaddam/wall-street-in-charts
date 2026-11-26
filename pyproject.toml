@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wall-street-in-charts"
+version = "0.1.0"
+description = "Six Wall Street giants from SEC filings, 2015 to 2025, with forecasts to 2030 and 2035."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Shaz Moghaddam" }]
+requires-python = ">=3.11"
+dependencies = [
+  "pandas>=2.2",
+  "requests>=2.32",
+  "lxml>=5.2",
+  "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[project.urls]
+Homepage = "https://shazmoghaddam.github.io/"
+Repository = "https://github.com/ShazMoghaddam/wall-street-in-charts"
+
+[tool.setuptools]
+packages = ["wallstreet"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# Inline XML fixtures read better unwrapped.
+"tests/test_parsers.py" = ["E501"]
