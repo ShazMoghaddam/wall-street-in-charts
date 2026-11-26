@@ -30,7 +30,8 @@ jobs:
       - name: Test (offline, uses committed data/processed)
         run: pytest -q
 
-      - name: Charts and findings are up to date
+      - name: Forecasts, charts and findings are up to date
         run: |
+          python models/run.py
           python findings/build.py
-          git diff --exit-code -- charts findings README.md
+          git diff --exit-code -- models charts findings README.md

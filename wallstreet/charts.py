@@ -465,6 +465,7 @@ def sector_bullets(theme: str) -> bc.Chart:
         x="sector",
         y="big_three",
         target="market",
+        series=["Big Three", "Market"],
         zones=[5, 15],
         zone_labels=["Small", "Mid", "Large"],
         suffix="%",
@@ -666,5 +667,197 @@ NAMES.update(
         market_share_progress: "f6-market-share-split",
         stake_rings: "f6-top-stakes",
         stake_histogram: "f6-stakes-spread",
+    }
+)
+
+
+# Finding 9: scenarios ---------------------------------------------------------
+
+
+def scenario_colours(firm: str | None, theme: str) -> list[str]:
+    """Bad, good, middling (drawn last so the shared history shows its colour)."""
+    t = bc.themes[theme]
+    middle = palette(theme)[FIRM_COLOUR[firm]] if firm else palette(theme)[0]
+    return [t["down"], t["up"], middle]
+
+
+def scenario_line(firm: str, metric: str, theme: str, width: int = HALF) -> bc.Chart:
+    p = F.scenario_paths(firm, metric)
+    if metric == "aum":
+        p = (p / 1000).round(2)
+        unit, label, decimals = "T", "AUM", 1
+    else:
+        p = p.round(1)
+        unit, label, decimals = "bn", "profit" if metric == "net_income" else "revenue", 0
+    p = p[["bad", "good", "middling"]]
+    p.columns = ["Bad", "Good", "Middling"]
+    p.index = p.index.astype(str)
+    return bc.line(
+        p,
+        heading=f"{F.short_name(firm)} · {label} to 2035 · ${unit}",
+        prefix="$",
+        suffix=unit,
+        decimals=decimals,
+        stat="none",
+        dash=["dashed", "dashed", "solid"],
+        color=scenario_colours(firm, theme),
+        notes={"2025": "Forecast starts"},
+        theme=theme,
+        width=width,
+        height=300,
+    )
+
+
+def profit_scenario_lines(theme: str) -> dict[str, bc.Chart]:
+    return {
+        f"f9-profit-{f.replace('_', '-')}": scenario_line(f, "net_income", theme) for f in F.LISTED
+    }
+
+
+def aum_scenario_lines(theme: str) -> dict[str, bc.Chart]:
+    return {
+        f"f9-aum-{f.replace('_', '-')}": scenario_line(f, "aum", theme)
+        for f in ("blackrock", "state_street")
+    }
+
+
+def profit_2035_bars(theme: str) -> bc.Chart:
+    rows = {}
+    for firm in F.LISTED:
+        p = F.scenario_paths(firm, "net_income")
+        rows[F.short_name(firm)] = {
+            "2025 actual": p.loc[2025, "middling"],
+            "2035 bad": p.loc[2035, "bad"],
+            "2035 middling": p.loc[2035, "middling"],
+            "2035 good": p.loc[2035, "good"],
+        }
+    df = pd.DataFrame(rows).T.round(1)
+    t = bc.themes[theme]
+    return bc.bars(
+        df,
+        heading="Profit in 2035 under each scenario · $bn",
+        prefix="$",
+        suffix="bn",
+        decimals=0,
+        show_values=True,
+        color=[MARKET_COLOUR[theme], t["down"], palette(theme)[0], t["up"]],
+        patterns=["stripes", "solid", "solid", "solid"],
+        theme=theme,
+        width=WIDE,
+        height=360,
+    )
+
+
+def market_scenarios(theme: str) -> bc.Chart:
+    d = F.driver_scenarios()
+    df = pd.DataFrame(
+        {"Bad": d["market_bad"], "Good": d["market_good"], "Middling": d["market_middling"]}
+    )
+    df.loc[2025] = 100.0
+    df = df.sort_index()
+    df.index = df.index.astype(str)
+    return bc.line(
+        df.round(0),
+        heading="US stock market value in the simulations · 2025 = 100",
+        decimals=0,
+        stat="none",
+        dash=["dashed", "dashed", "solid"],
+        color=scenario_colours(None, theme),
+        theme=theme,
+        width=HALF,
+        height=300,
+    )
+
+
+def rate_scenarios(theme: str) -> bc.Chart:
+    d = F.driver_scenarios()
+    rate = F.fed_funds_quarterly()
+    last = float(rate.loc["2025Q1":"2025Q4"].mean())
+    df = pd.DataFrame({"Low": d["rate_bad"], "High": d["rate_good"], "Middle": d["rate_middling"]})
+    df.loc[2025] = last
+    df = df.sort_index().round(2)
+    df.index = df.index.astype(str)
+    p = palette(theme)
+    return bc.line(
+        df,
+        heading="Fed funds rate in the simulations · yearly average %",
+        suffix="%",
+        decimals=1,
+        stat="none",
+        zero=True,
+        dash=["dashed", "dashed", "solid"],
+        color=[p[4], p[5], p[3]],
+        theme=theme,
+        width=HALF,
+        height=300,
+    )
+
+
+def backtest_bullets(theme: str) -> bc.Chart:
+    s = F.backtest_summary().reset_index()
+    label = {"revenue": "revenue", "net_income": "profit", "aum": "AUM (year-end sum)"}
+    s = s[s["metric"] != "aum"]
+    df = pd.DataFrame(
+        {
+            "measure": [
+                f"{F.short_name(f)} {label[m]}" for f, m in zip(s["firm"], s["metric"], strict=True)
+            ],
+            "Model": s["predicted_total"].round(0),
+            "What happened": s["actual_total"].round(0),
+        }
+    )
+    return bc.bullet(
+        df,
+        x="measure",
+        y="Model",
+        target="What happened",
+        series=["Model (trained to 2020)", "What happened"],
+        prefix="$",
+        suffix="bn",
+        decimals=0,
+        heading="Backtest 2021-2025 · bar = model (trained to 2020), mark = what happened",
+        color=[palette(theme)[0]],
+        theme=theme,
+        width=WIDE,
+        height=440,
+    )
+
+
+def backtest_error_bars(theme: str) -> bc.Chart:
+    s = F.backtest_summary()["error"].unstack("metric")[["revenue", "net_income"]] * 100
+    s = s.loc[F.LISTED].round(1)
+    s.index = names(s.index)
+    s.columns = ["Revenue", "Profit"]
+    p = palette(theme)
+    return bc.bars(
+        s,
+        heading="Backtest · average yearly error, 2021-2025 · %",
+        suffix="%",
+        decimals=0,
+        show_values=True,
+        horizontal=True,
+        color=[p[4], p[1]],
+        theme=theme,
+        width=HALF,
+        height=300,
+    )
+
+
+BUILDERS += [
+    profit_scenario_lines,
+    aum_scenario_lines,
+    profit_2035_bars,
+    market_scenarios,
+    rate_scenarios,
+    backtest_bullets,
+    backtest_error_bars,
+]
+NAMES.update(
+    {
+        profit_2035_bars: "f9-profit-2035",
+        market_scenarios: "f9-market",
+        rate_scenarios: "f9-rates",
+        backtest_bullets: "f9-backtest",
+        backtest_error_bars: "f9-backtest-error",
     }
 )

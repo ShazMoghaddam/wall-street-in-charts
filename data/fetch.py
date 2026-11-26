@@ -18,7 +18,7 @@ import json
 import shutil
 import sys
 import time
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -46,7 +46,7 @@ from wallstreet.config import (  # noqa: E402
 from wallstreet.edgar import list_filings  # noqa: E402
 from wallstreet.http import Fetcher  # noqa: E402
 
-STEPS = ("fundamentals", "fred", "aum", "segments", "holdings", "sectors")
+STEPS = ("fundamentals", "fred", "aum", "segments", "holdings", "sectors", "drivers")
 TOP_N = 500
 REFRESHABLE = ("data.sec.gov", "api.stlouisfed.org")
 
@@ -353,6 +353,30 @@ def step_sectors(fx: Fetcher, settings) -> list[dict]:
     ]
 
 
+DRIVER_SERIES = {"BOGZ1LM883164115Q": "market", "DFF": "fed_funds", "VIXCLS": "vix"}
+DRIVER_START = date(1990, 1, 1)
+
+
+def step_drivers(fx: Fetcher, settings) -> list[dict]:
+    """Long quarterly history of the forecast drivers, 1990 to the end of the period.
+
+    Market value: the Fed's total value of US public company shares (quarter end).
+    Fed funds rate and VIX: quarterly averages of daily values.
+    """
+    key = fred_api_key()
+    cols = {}
+    for series_id, name in DRIVER_SERIES.items():
+        log(f"drivers: {series_id}")
+        daily = fred.fetch_series(fx, series_id, key, DRIVER_START)
+        q = fred.to_quarterly(daily).set_index("quarter")
+        cols[name] = q["last"] if name == "market" else q["mean"]
+    df = pd.DataFrame(cols)
+    df = df[(df.index >= "1990Q1") & (df.index <= f"{settings.end.year}Q4")]
+    df["market_value_usd"] = df.pop("market") * 1e6
+    df.index.name = "quarter"
+    return [write(df.reset_index(), "drivers_quarterly.csv")]
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--only", nargs="+", choices=STEPS, help="run only these steps")
@@ -374,6 +398,7 @@ def main(argv: list[str] | None = None) -> None:
         "segments": step_segments,
         "holdings": step_holdings,
         "sectors": step_sectors,
+        "drivers": step_drivers,
     }
     manifest_path = PROCESSED / "manifest.json"
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {"steps": {}}
