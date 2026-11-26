@@ -1,0 +1,50 @@
+cusip,sector,issuer,reason
+30303M102,Communication,Meta Platforms,Social media and advertising: GICS Communication Services (SEC code is computer services)
+02079K305,Communication,Alphabet class A,Search and advertising: GICS Communication Services
+02079K107,Communication,Alphabet class C,Search and advertising: GICS Communication Services
+38259P508,Communication,Google (before 2015 rename),Search and advertising: GICS Communication Services
+38259P706,Communication,Google class C (before 2015 rename),Search and advertising: GICS Communication Services
+92826C839,Financials,Visa,Payments: GICS Financials since 2023 (SEC code is business services)
+57636Q104,Financials,Mastercard,Payments: GICS Financials since 2023
+70450Y103,Financials,PayPal,Payments: GICS Financials since 2023
+31620M106,Financials,Fidelity National Information Services,Payments: GICS Financials since 2023
+337738108,Financials,Fiserv,Payments: GICS Financials since 2023
+G1151C101,Technology,Accenture,IT services
+235851102,Health care,Danaher,Life sciences tools
+883556102,Health care,Thermo Fisher Scientific,Life sciences tools
+88579Y101,Industrials,3M,Industrial conglomerate (SEC code is medical instruments)
+03027X100,Real estate,American Tower,Tower REIT (SEC code is communications equipment)
+22822V101,Real estate,Crown Castle,Tower REIT
+78410G104,Real estate,SBA Communications,Tower REIT
+654106103,Consumer discretionary,Nike,Footwear and apparel
+09857L108,Consumer discretionary,Booking Holdings,Online travel
+278642103,Consumer discretionary,eBay,Online marketplace
+009066101,Consumer discretionary,Airbnb,Online travel
+060505104,Financials,Bank of America,Bank
+747525103,Technology,Qualcomm,Semiconductors
+038222105,Technology,Applied Materials,Semiconductor equipment
+902973304,Financials,US Bancorp,Bank
+92532F100,Health care,Vertex Pharmaceuticals,Biotech
+571748102,Financials,Marsh & McLennan,Insurance broker
+743315103,Financials,Progressive,Insurance
+693475105,Financials,PNC Financial Services,Bank
+913017109,Industrials,United Technologies (now RTX),Aerospace
+032095101,Technology,Amphenol,Electronic components
+615369105,Financials,Moody's,Ratings and data
+674599105,Energy,Occidental Petroleum,Oil and gas
+45168D104,Health care,IDEXX Laboratories,Diagnostics
+151020104,Health care,Celgene,Biotech (bought by Bristol Myers 2019)
+219350105,Technology,Corning,Electronic components
+874039100,Technology,Taiwan Semiconductor (ADR),Semiconductors
+263534109,Materials,DuPont (before 2017 merger),Chemicals
+260543103,Materials,Dow Chemical (before 2017 merger),Chemicals
+G7997R103,Technology,Seagate,Storage hardware
+36266G107,Health care,GE HealthCare,Medical equipment
+88160R101,Consumer discretionary,Tesla,Carmaker: kept out of clean energy by choice
+126650100,Health care,CVS Health,Pharmacy and health insurer (Aetna): GICS Health Care
+78409V104,Financials,S&P Global,Ratings and data
+01609W102,Consumer discretionary,Alibaba (ADR),Online retail
+512807108,Technology,Lam Research,Semiconductor equipment
+824348106,Materials,Sherwin-Williams,Paints and coatings
+278865100,Materials,Ecolab,Specialty chemicals
+053015103,Industrials,Automatic Data Processing,Payroll services: GICS Industrials since 2023

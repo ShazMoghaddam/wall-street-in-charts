@@ -5,6 +5,12 @@ All notable changes to this project are listed here. The format follows [Keep a 
 ## [Unreleased]
 
 ### Added
+- Holdings findings 3 to 6: where the fund managers invest, whether they choose or follow the market, energy holdings since 2015, and the Big Three's share of the US stock market.
+- Sector mapping for 13F holdings: SEC company match, SIC code to 11 sectors, hand checks for the largest holdings, ETFs kept apart. At least 95% of value mapped in every quarter.
+- The institutional "market" from the SEC's bulk 13F data, one year-end per year, with unit-slip checks against the Big Three's prices.
+- Big Three stakes in their ~500 largest holdings, using shares outstanding from the SEC frames API.
+- 11 more charts in light and dark, adding gauge, ring, progress, bullet and histogram, so all 15 Bezel Charts types are now used.
+- Notebook `notebooks/03_holdings_and_sectors.ipynb`.
 - History findings 1, 2, 7 and 8: who grew biggest, where the banks make money, how profits moved when rates rose, and the shocks of 2020, 2022 and 2023.
 - 20 Bezel Charts in light and dark themes (40 SVGs) using ten chart types, shown in the README with GitHub's `<picture>` tag so readers see the theme that matches theirs.
 - `findings/build.py`, which writes the charts, one page per finding and the README headline block from the data, so text and numbers never drift apart.

@@ -73,7 +73,63 @@ def test_every_firm_has_its_own_colour():
 
 def test_charts_build_in_both_themes():
     charts = C.build_all()
-    assert len(charts) == 20
+    assert len(charts) == 31
     for themes in charts.values():
         assert set(themes) == set(C.THEMES)
         assert str(themes["light"]) != str(themes["dark"])
+
+
+# Findings 3 to 6 --------------------------------------------------------------
+
+
+def test_tech_is_the_largest_sector_and_grew(n):
+    assert n["top_sector_2025"] == "Technology"
+    assert n["tech_share_2025"] > 2 * n["tech_share_2015"]
+
+
+def test_most_other_sectors_shrank(n):
+    # "Most other sectors shrank": at most 3 of the 11 grew (tech plus two).
+    assert n["sectors_grew"] <= 3
+
+
+def test_they_follow_the_market(n):
+    assert n["max_distance_2025"] < 0.05
+
+
+def test_big_three_hold_slightly_more_tech_than_market(n):
+    assert 0 < n["tech_share_2025"] - n["market_tech_share_2025"] < 0.05
+
+
+def test_vanguard_real_estate_tilt_2015(n):
+    assert n["vanguard_real_estate_2015"] > n["market_real_estate_2015"] + 0.02
+
+
+def test_oil_gas_share_halved_for_everyone(n):
+    for who in ["blackrock", "vanguard", "state_street", "market"]:
+        assert n[f"{who}_oil_2025"] < 0.65 * n[f"{who}_oil_2015"]
+
+
+def test_clean_energy_tiny_next_to_oil(n):
+    assert n["clean_value_peak_bn"] < 0.1 * n["oil_value_2025_bn"]
+
+
+def test_big_three_share_rose_to_almost_a_fifth(n):
+    assert 0.15 < n["big_three_share_2025"] < 0.2
+    assert n["big_three_share_2025"] > n["big_three_share_2015"]
+
+
+def test_vanguard_largest_then_blackrock(n):
+    assert (
+        n["vanguard_market_share_2025"]
+        > n["blackrock_market_share_2025"]
+        > n["state_street_market_share_2025"]
+    )
+
+
+def test_median_stake_rose(n):
+    assert n["median_stake_2025"] > n["median_stake_2015"]
+
+
+def test_sector_weights_add_up():
+    for who in ["big_three", "market", "vanguard"]:
+        assert F.sector_weights(who).sum(axis=1).round(6).eq(1).all()

@@ -110,3 +110,31 @@ def test_bank_segments_are_mapped():
     for firm in ["jpmorgan", "goldman", "morgan_stanley"]:
         years = set(revenue[revenue["firm"] == firm]["year"])
         assert years == set(range(SETTINGS.start.year, SETTINGS.end.year + 1)), firm
+
+
+def test_sector_coverage_is_high():
+    df = load("holdings_by_sector.csv")
+    total = df.groupby(["firm", "quarter_end"])["value_usd"].sum()
+    mapped = df[df["sector"] != "Not mapped"].groupby(["firm", "quarter_end"])["value_usd"].sum()
+    assert (mapped / total).min() > 0.9
+
+
+def test_market_every_year_end():
+    m = load("market_summary.csv")
+    assert m["year"].tolist() == list(YEARS)
+    # The cleaned institutional market sits below the total US market value.
+    fred = load("fred_quarterly.csv")
+    z = fred[fred["series"] == "BOGZ1LM883164115Q"].set_index("quarter")["last"] * 1e6
+    for row in m.itertuples():
+        assert 0.5 < row.total_value_usd / z[f"{row.year}Q4"] < 1.0
+
+
+def test_stakes_are_plausible():
+    s = load("big_three_stakes.csv").dropna(subset=["stake"])
+    assert s["stake"].between(0, 0.6).all()
+    assert s.groupby("quarter_end")["stake"].count().min() > 400
+
+
+def test_clean_energy_list_matches_names():
+    c = load("clean_energy_matches.csv")
+    assert c["company"].nunique() >= 25

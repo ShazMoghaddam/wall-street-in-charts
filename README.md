@@ -9,7 +9,7 @@ Six Wall Street giants, told through their SEC filings from 2015 to 2025, with f
 - **Banks:** JPMorgan Chase, Goldman Sachs, Morgan Stanley
 - **Fund managers:** BlackRock, Vanguard, State Street
 
-> **Status:** stage 2 of 5. Data pipeline and history findings are done. Holdings and sectors, forecasts and the report site come next.
+> **Status:** stage 3 of 5. Data, history findings and holdings findings are done. Forecasts and the report site come next.
 
 > 📈 **Every chart here is drawn with [bezel-charts](https://pypi.org/project/bezel-charts/), an open-source Python
 > library created by Shaz Moghaddam, the author of this project.** It turns pandas data into clean, self-contained
@@ -26,15 +26,19 @@ Six Wall Street giants, told through their SEC filings from 2015 to 2025, with f
 
 1. **[Who grew biggest](findings/01-who-grew-biggest.md):** JPMorgan's revenue nearly doubled to $182.4bn, but Goldman grew profit fastest (2.8× its 2015 level). BlackRock's AUM tripled to $14.0 trillion.
 2. **[Where the banks make money](findings/02-where-banks-make-money.md):** Goldman still earns 71% of revenue from markets; Morgan Stanley now earns most of its revenue (54%) from wealth.
-3. **[Rates rose in 2022](findings/07-rates-and-profits.md):** JPMorgan's net interest income jumped 71% from 2021 to 2023, while Goldman's profit fell 61%.
-4. **[Shocks](findings/08-shocks.md):** the pandemic cut JPMorgan's first-half profit by 60%; the 2023 bank failures lifted it 60%.
+3. **[Where the fund managers invest](findings/03-where-fund-managers-invest.md):** technology rose from 14% to 32% of the Big Three's US shares.
+4. **[Choosing or following?](findings/04-choosing-or-following.md):** following. No firm's sector mix was more than 3% away from the market's in 2025.
+5. **[Energy](findings/05-energy.md):** oil, gas and coal fell from about 6% to 3% of their holdings; clean energy peaked at just $28.7bn.
+6. **[The Big Three's share](findings/06-big-three-share.md):** together they held 19% of all US public company shares at the end of 2025, up from 15% in 2015.
+7. **[Rates rose in 2022](findings/07-rates-and-profits.md):** JPMorgan's net interest income jumped 71% from 2021 to 2023, while Goldman's profit fell 61%.
+8. **[Shocks](findings/08-shocks.md):** the pandemic cut JPMorgan's first-half profit by 60%; the 2023 bank failures lifted it 60%.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="charts/f7-profit-and-rates-dark.svg">
-  <img src="charts/f7-profit-and-rates-light.svg" alt="Quarterly profit and the Fed's interest rate: 2 bar series and 1 line over 28 points" width="760">
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f6-market-share-dark.svg">
+  <img src="charts/f6-market-share-light.svg" alt="Share of all US public company shares · %: 3 series stacked over 44 points" width="760">
 </picture>
 
-Findings 3 to 6 (holdings and sectors) and 9 (forecasts) arrive in later stages.
+Finding 9 (scenarios to 2030 and 2035) arrives with the forecasts in stage 4.
 <!-- findings:end -->
 
 ## The questions

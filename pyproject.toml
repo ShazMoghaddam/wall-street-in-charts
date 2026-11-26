@@ -11,6 +11,7 @@ license = "MIT"
 authors = [{ name = "Shaz Moghaddam" }]
 requires-python = ">=3.11"
 dependencies = [
+  "numpy>=1.26",
   "pandas>=2.2",
   "requests>=2.32",
   "lxml>=5.2",

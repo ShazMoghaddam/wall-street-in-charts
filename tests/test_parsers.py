@@ -135,3 +135,36 @@ def test_missing_secret_has_clear_message(monkeypatch):
     monkeypatch.delenv("NOT_A_REAL_VAR", raising=False)
     with pytest.raises(MissingSecretError, match="NOT_A_REAL_VAR"):
         require_env("NOT_A_REAL_VAR", "Add it to .env.")
+
+
+def test_unit_slips_are_fixed_or_dropped():
+    from wallstreet import market13f
+
+    info = pd.DataFrame(
+        {
+            "cusip": ["A", "A", "A", "A"],
+            "value_usd": [100_000.0, 100_000_000.0, 100.0, 500_000.0],
+            "shares": [1000, 1000, 1000, 1000],
+            "SSHPRNAMTTYPE": ["SH", "SH", "SH", "SH"],
+        }
+    )
+    ref_price = pd.Series({"A": 100.0})
+    ref_shares = pd.Series({"A": 10_000})
+    kept, stats = market13f.reconcile_units(info, ref_price, ref_shares)
+    # Right, 1,000x too big (fixed), 1,000x too small (fixed), 5x off (dropped)
+    assert kept["value_usd"].tolist() == [100_000.0, 100_000.0, 100_000.0]
+    assert stats["rows_rescaled"] == 2
+    assert stats["rows_dropped_off_price"] == 1
+
+
+def test_sector_mapping_rules():
+    from wallstreet import sectors
+
+    assert sectors.sic_to_sector(2834) == "Health care"  # narrow range beats chemicals
+    assert sectors.sic_to_sector(4922) == "Energy"  # pipelines beat utilities
+    assert sectors.sic_to_sector(5331) == "Consumer staples"
+    assert sectors.normalise("QUALCOMM INC/DE") == sectors.normalise("Qualcomm Inc")
+    assert sectors.is_fund("ISHARES TR", "CORE S&P 500 ETF")
+    assert not sectors.is_fund("APPLE INC", "COM")
+    assert sectors.clean_energy_name("FIRST SOLAR INC") == "First Solar"
+    assert sectors.clean_energy_name("NEXTERA ENERGY INC") is None

@@ -381,3 +381,290 @@ def build_all() -> dict[str, dict[str, bc.Chart]]:
             for name, chart in charts.items():
                 out.setdefault(name, {})[theme] = chart
     return out
+
+
+# Findings 3 to 6 -------------------------------------------------------------
+
+SECTOR_COLOURS = {
+    "light": {
+        "Technology": "#6E70F0",
+        "Financials": "#2F8FE0",
+        "Health care": "#16A884",
+        "Industrials": "#D99A0E",
+        "Consumer discretionary": "#E2508C",
+        "Communication": "#EE6431",
+        "Consumer staples": "#8E5BD0",
+        "Energy": "#5C5470",
+        "Real estate": "#C2417A",
+        "Utilities": "#0FA3B1",
+        "Materials": "#8A9A2B",
+    },
+    "dark": {
+        "Technology": "#9FA1FF",
+        "Financials": "#7CC4FF",
+        "Health care": "#5EE6C8",
+        "Industrials": "#FFC857",
+        "Consumer discretionary": "#F675A8",
+        "Communication": "#FF8A5B",
+        "Consumer staples": "#B79CFF",
+        "Energy": "#B8B2C8",
+        "Real estate": "#FF6F91",
+        "Utilities": "#4FD8E6",
+        "Materials": "#C6D365",
+    },
+}
+MARKET_COLOUR = {"light": "#8C8AA0", "dark": "#8C8AA0"}
+
+
+def year_ends(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[df.index.str.endswith("12-31")]
+    df.index = df.index.str[:4]
+    return df
+
+
+def sector_area(theme: str) -> bc.Chart:
+    w = (year_ends(F.sector_weights("big_three")) * 100).round(1)
+    return bc.area(
+        w,
+        stacked=True,
+        max=100,
+        heading="Big Three · sector mix of their US shares",
+        suffix="%",
+        decimals=0,
+        color=[SECTOR_COLOURS[theme][s] for s in w.columns],
+        theme=theme,
+        width=WIDE,
+        height=380,
+    )
+
+
+def sector_shift_bars(theme: str) -> bc.Chart:
+    w = year_ends(F.sector_weights("big_three"))
+    change = ((w.iloc[-1] - w.iloc[0]) * 100).round(1).sort_values(ascending=False)
+    return bc.bars(
+        change,
+        heading="Change in sector share, 2015 to 2025 · points",
+        suffix=" pts",
+        decimals=1,
+        show_values=True,
+        angle_labels=True,
+        color=[SECTOR_COLOURS[theme][s] for s in change.index],
+        theme=theme,
+        width=WIDE,
+        height=360,
+    )
+
+
+def sector_bullets(theme: str) -> bc.Chart:
+    last = F.sector_weights("big_three").index[-1]
+    b3 = (F.sector_weights("big_three").loc[last] * 100).round(1)
+    mk = (F.sector_weights("market").loc[last] * 100).round(1)
+    df = pd.DataFrame({"sector": b3.index, "big_three": b3.values, "market": mk.values})
+    return bc.bullet(
+        df,
+        x="sector",
+        y="big_three",
+        target="market",
+        zones=[5, 15],
+        zone_labels=["Small", "Mid", "Large"],
+        suffix="%",
+        decimals=1,
+        heading="Big Three vs the market, 2025 · bar = Big Three, mark = market",
+        color=[palette(theme)[0]],
+        theme=theme,
+        width=WIDE,
+        height=460,
+    )
+
+
+def distance_line(theme: str) -> bc.Chart:
+    d = (F.distance_from_market() * 100).round(1)
+    d.index = d.index.str[:4]
+    d.columns = names(d.columns)
+    return bc.line(
+        d,
+        heading="How far each sector mix is from the market · 0% = exact copy",
+        suffix="%",
+        decimals=1,
+        zero=True,
+        markers=True,
+        min=0,
+        max=10,
+        color=firm_colours(F.FUND_MANAGERS, theme),
+        theme=theme,
+        width=HALF,
+        height=320,
+    )
+
+
+def oil_line(theme: str) -> bc.Chart:
+    oil = (year_ends(F.energy_share("oil_gas_coal")) * 100).round(2)
+    oil = oil[F.FUND_MANAGERS + ["market"]]
+    oil.columns = names(F.FUND_MANAGERS) + ["Market"]
+    return bc.line(
+        oil,
+        heading="Oil, gas and coal · share of US shares held",
+        suffix="%",
+        decimals=1,
+        zero=True,
+        markers=True,
+        dash=["solid", "solid", "solid", "dashed"],
+        color=firm_colours(F.FUND_MANAGERS, theme) + [MARKET_COLOUR[theme]],
+        theme=theme,
+        width=WIDE,
+        height=340,
+    )
+
+
+def clean_vs_oil_combo(theme: str) -> bc.Chart:
+    clean = year_ends(F.energy_value("clean_energy"))[F.FUND_MANAGERS].sum(axis=1) / 1e9
+    oil = year_ends(F.energy_value("oil_gas_coal"))[F.FUND_MANAGERS].sum(axis=1) / 1e9
+    df = pd.DataFrame({"Clean energy": clean.round(1), "Oil, gas and coal": oil.round(0)})
+    p = palette(theme)
+    return bc.combo(
+        df,
+        bars="Clean energy",
+        line="Oil, gas and coal",
+        prefix="$",
+        suffix="bn",
+        line_prefix="$",
+        line_suffix="bn",
+        line_decimals=0,
+        heading="Big Three · clean energy (bars) vs oil, gas and coal (line) · $bn",
+        color=[p[2], SECTOR_COLOURS[theme]["Energy"]],
+        theme=theme,
+        width=WIDE,
+        height=340,
+    )
+
+
+def share_parts(row: pd.Series) -> dict[str, float]:
+    """Each firm's share in %, rounded once so parts and total always agree."""
+    return {F.short_name(f): round(float(row[f]) * 100, 2) for f in F.FUND_MANAGERS}
+
+
+def market_share_gauge(theme: str) -> bc.Chart:
+    share = F.big_three_market_share()
+    now = round(sum(share_parts(share.iloc[-1]).values()), 2)
+    then = round(sum(share_parts(share.iloc[0]).values()), 2)
+    return bc.gauge(
+        now,
+        min=0,
+        max=30,
+        label="of US public company shares",
+        suffix="%",
+        decimals=2,
+        goal=then,
+        heading="Big Three combined · end of 2025 · mark = 2015",
+        color=[palette(theme)[0]],
+        theme=theme,
+        width=HALF,
+        height=300,
+    )
+
+
+def market_share_area(theme: str) -> bc.Chart:
+    share = (F.big_three_market_share() * 100).round(2)
+    share.index = pd.to_datetime(share.index)
+    share.columns = names(share.columns)
+    return bc.area(
+        share,
+        stacked=True,
+        heading="Share of all US public company shares · %",
+        suffix="%",
+        decimals=1,
+        x_format="%Y",
+        color=firm_colours(F.FUND_MANAGERS, theme),
+        theme=theme,
+        width=WIDE,
+        height=340,
+    )
+
+
+def market_share_progress(theme: str) -> bc.Chart:
+    return bc.progress(
+        share_parts(F.big_three_market_share().iloc[-1]),
+        max=100,
+        suffix="%",
+        decimals=2,
+        heading="Of every $100 in US public company shares, the Big Three hold",
+        color=firm_colours(F.FUND_MANAGERS, theme),
+        theme=theme,
+        width=WIDE,
+    )
+
+
+def stake_rings(theme: str) -> bc.Chart:
+    s = F.stakes()
+    snap = s[s["quarter_end"] == s["quarter_end"].max()].head(5)
+    labels = {
+        "NVIDIA CORPORATION": "Nvidia",
+        "APPLE INC": "Apple",
+        "MICROSOFT CORP": "Microsoft",
+        "AMAZON COM INC": "Amazon",
+        "ALPHABET INC": "Alphabet",
+    }
+    data = {
+        labels.get(r.issuer, r.issuer.title()): round(r.stake * 100, 1) for r in snap.itertuples()
+    }
+    return bc.ring(
+        data,
+        heading="Big Three stake in the five biggest holdings · % of shares",
+        suffix="%",
+        decimals=1,
+        color=palette(theme)[:5],
+        theme=theme,
+        width=HALF,
+        height=300,
+    )
+
+
+def stake_histogram(theme: str) -> bc.Chart:
+    s = F.stakes()
+    data = {
+        year: (s[s["quarter_end"] == f"{year}-12-31"]["stake"] * 100).round(2).tolist()
+        for year in ("2015", "2025")
+    }
+    p = palette(theme)
+    return bc.histogram(
+        data,
+        bin_width=2.5,
+        percent=True,
+        mark="median",
+        suffix="%",
+        heading="Big Three stake across the ~500 largest holdings · share of companies",
+        color=[p[4], p[1]],
+        theme=theme,
+        width=WIDE,
+        height=340,
+    )
+
+
+BUILDERS += [
+    sector_area,
+    sector_shift_bars,
+    sector_bullets,
+    distance_line,
+    oil_line,
+    clean_vs_oil_combo,
+    market_share_gauge,
+    market_share_area,
+    market_share_progress,
+    stake_rings,
+    stake_histogram,
+]
+NAMES.update(
+    {
+        sector_area: "f3-sector-mix",
+        sector_shift_bars: "f3-sector-shift",
+        sector_bullets: "f4-vs-market",
+        distance_line: "f4-distance",
+        oil_line: "f5-oil-gas-coal",
+        clean_vs_oil_combo: "f5-clean-vs-oil",
+        market_share_gauge: "f6-market-share-gauge",
+        market_share_area: "f6-market-share",
+        market_share_progress: "f6-market-share-split",
+        stake_rings: "f6-top-stakes",
+        stake_histogram: "f6-stakes-spread",
+    }
+)

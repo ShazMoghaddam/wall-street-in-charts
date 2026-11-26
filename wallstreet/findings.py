@@ -276,4 +276,166 @@ def headline_numbers() -> dict:
     out["widest_margin_spread"] = spread.idxmax()
     for year in (2020, 2022, 2023):
         out[f"stress_days_{year}"] = int(stress_days(year).sum())
+    if (PROCESSED / "holdings_by_sector.csv").exists():
+        out.update(headline_numbers_holdings())
+    return out
+
+
+# Findings 3 to 6: holdings and sectors ----------------------------------------
+
+FUND_MANAGERS = ["blackrock", "vanguard", "state_street"]
+SECTORS = [
+    "Technology",
+    "Financials",
+    "Health care",
+    "Industrials",
+    "Consumer discretionary",
+    "Communication",
+    "Consumer staples",
+    "Energy",
+    "Real estate",
+    "Utilities",
+    "Materials",
+]
+
+
+@cache
+def holdings_by_sector() -> pd.DataFrame:
+    return pd.read_csv(PROCESSED / "holdings_by_sector.csv")
+
+
+@cache
+def market_by_sector() -> pd.DataFrame:
+    return pd.read_csv(PROCESSED / "market_by_sector.csv")
+
+
+def sector_weights(who: str = "big_three") -> pd.DataFrame:
+    """Quarter ends as rows, the 11 sectors as columns, shares adding to 1.
+
+    Funds (ETFs) and holdings we couldn't map are left out and the rest
+    scaled to 100%, so firms and the market compare like with like.
+    `who` is a firm key, "big_three" (the three combined) or "market".
+    """
+    if who == "market":
+        df = market_by_sector()
+    else:
+        df = holdings_by_sector()
+        df = df[df["firm"].isin(FUND_MANAGERS if who == "big_three" else [who])]
+    df = df[df["sector"].isin(SECTORS)]
+    wide = df.groupby(["quarter_end", "sector"])["value_usd"].sum().unstack("sector")
+    wide = wide.div(wide.sum(axis=1), axis=0)
+    return wide[SECTORS]
+
+
+def mapped_share() -> pd.DataFrame:
+    """How much of each firm's value was mapped to a sector, by quarter."""
+    df = holdings_by_sector()
+    total = df.groupby(["firm", "quarter_end"])["value_usd"].sum()
+    mapped = df[df["sector"] != "Not mapped"].groupby(["firm", "quarter_end"])["value_usd"].sum()
+    return (mapped / total).unstack("firm")
+
+
+def distance_from_market() -> pd.DataFrame:
+    """Half the summed gaps between a firm's sector weights and the market's.
+
+    0% means an exact copy of the market's sector mix; 100% means no overlap.
+    Year-ends as rows, firms as columns.
+    """
+    market = sector_weights("market")
+    out = {}
+    for firm in FUND_MANAGERS:
+        w = sector_weights(firm).loc[market.index]
+        out[firm] = (w - market).abs().sum(axis=1) / 2
+    return pd.DataFrame(out)
+
+
+@cache
+def energy_holdings() -> pd.DataFrame:
+    return pd.read_csv(PROCESSED / "energy_holdings.csv")
+
+
+def energy_share(group: str) -> pd.DataFrame:
+    """Share of 13F value in oil, gas and coal or in clean energy. Quarters x firms."""
+    df = energy_holdings()
+    df = df[df["group"] == group]
+    return df.pivot(index="quarter_end", columns="firm", values="share")
+
+
+def energy_value(group: str) -> pd.DataFrame:
+    df = energy_holdings()
+    df = df[df["group"] == group]
+    return df.pivot(index="quarter_end", columns="firm", values="value_usd")
+
+
+def big_three_market_share() -> pd.DataFrame:
+    """Each firm's 13F company shares (funds left out) as a share of all US public shares."""
+    df = holdings_by_sector()
+    df = df[df["firm"].isin(FUND_MANAGERS) & (df["sector"] != "Funds (ETFs)")]
+    held = df.groupby(["quarter_end", "firm"])["value_usd"].sum().unstack("firm")
+    q = fred_quarterly()
+    market = q[q["series"] == "BOGZ1LM883164115Q"].set_index("quarter")["last"] * 1e6
+    quarters = pd.PeriodIndex(pd.to_datetime(held.index), freq="Q").astype(str)
+    share = held.div(market.reindex(quarters).to_numpy(), axis=0)
+    return share[FUND_MANAGERS]
+
+
+@cache
+def stakes() -> pd.DataFrame:
+    df = pd.read_csv(PROCESSED / "big_three_stakes.csv", dtype={"cusip": str})
+    # One row per company: share classes (Alphabet A and C) carry the same stake.
+    return df.dropna(subset=["stake"]).drop_duplicates(["quarter_end", "cik"])
+
+
+def headline_numbers_holdings() -> dict:
+    out: dict = {}
+    first, last = "2015-12-31", "2025-12-31"
+    b3, mk = sector_weights("big_three"), sector_weights("market")
+    out["tech_share_2015"] = b3.loc[first, "Technology"]
+    out["tech_share_2025"] = b3.loc[last, "Technology"]
+    out["market_tech_share_2025"] = mk.loc[last, "Technology"]
+    out["energy_share_2015"] = b3.loc[first, "Energy"]
+    out["energy_share_2025"] = b3.loc[last, "Energy"]
+    change = (b3.loc[last] - b3.loc[first]).sort_values()
+    fallers = [x.lower() for x in change.index[:4]]
+    out["biggest_fallers"] = ", ".join(fallers[:-1]) + " and " + fallers[-1]
+    out["sectors_grew"] = int((change > 0).sum())
+    top = b3.loc[last].sort_values(ascending=False)
+    out["top_sector_2025"] = top.index[0]
+    out["top_sector_2025_share"] = top.iloc[0]
+    d = distance_from_market()
+    for firm in FUND_MANAGERS:
+        out[f"{firm}_distance_2015"] = d.loc[first, firm]
+        out[f"{firm}_distance_2025"] = d.loc[last, firm]
+    out["max_distance_2025"] = d.loc[last].max()
+    out["vanguard_real_estate_2015"] = sector_weights("vanguard").loc[first, "Real estate"]
+    out["market_real_estate_2015"] = mk.loc[first, "Real estate"]
+    oil = energy_share("oil_gas_coal")
+    clean = energy_share("clean_energy")
+    for firm in FUND_MANAGERS + ["market"]:
+        out[f"{firm}_oil_2015"] = oil.loc[first, firm]
+        out[f"{firm}_oil_2025"] = oil.loc[last, firm]
+    clean_b3 = energy_value("clean_energy")[FUND_MANAGERS].sum(axis=1)
+    out["clean_peak_quarter"] = clean_b3.idxmax()
+    out["clean_value_peak_bn"] = clean_b3.max() / 1e9
+    out["clean_value_2025_bn"] = clean_b3.loc[last] / 1e9
+    out["oil_value_2025_bn"] = energy_value("oil_gas_coal").loc[last, FUND_MANAGERS].sum() / 1e9
+    out["clean_share_peak"] = clean[FUND_MANAGERS].mean(axis=1).max()
+    share = big_three_market_share()
+    total = share.sum(axis=1)
+    out["big_three_share_2015"] = total.loc[first]
+    out["big_three_share_2025"] = total.loc[last]
+    for firm in FUND_MANAGERS:
+        out[f"{firm}_market_share_2025"] = share.loc[last, firm]
+    s = stakes()
+    for q, label in ((first, "2015"), (last, "2025")):
+        snap = s[s["quarter_end"] == q]
+        out[f"median_stake_{label}"] = snap["stake"].median()
+        out[f"stakes_over_20pct_{label}"] = int((snap["stake"] > 0.20).sum())
+        out[f"stakes_companies_{label}"] = int(len(snap))
+    snap = s[s["quarter_end"] == last].head(5)
+    for i, row in enumerate(snap.itertuples(), start=1):
+        out[f"top{i}_company"] = row.issuer
+        out[f"top{i}_stake"] = row.stake
+    cov = mapped_share()
+    out["mapped_share_min"] = cov[FUND_MANAGERS].min().min()
     return out
