@@ -1,0 +1,36 @@
+firm,segment_member,bucket,note
+jpmorgan,ConsumerCommunityBankingMember,banking_lending,Consumer and Community Banking
+jpmorgan,CommercialBankingMember,banking_lending,Commercial Banking (merged into CIB from 2022 in recast figures)
+jpmorgan,CorporateInvestmentBankMember,markets_dealmaking,Corporate and Investment Bank (to 2020)
+jpmorgan,CorporateAndInvestmentBankMember,markets_dealmaking,Corporate and Investment Bank (2021)
+jpmorgan,CommercialAndInvestmentBankMember,markets_dealmaking,Commercial and Investment Bank (from 2022); includes former Commercial Banking lending
+jpmorgan,AssetandWealthManagementSegmentMember,wealth_asset_management,Asset and Wealth Management
+jpmorgan,AssetManagementSegmentMember,wealth_asset_management,Asset Management (older name)
+jpmorgan,CorporateNonSegmentMember,exclude,Corporate centre: not a business line
+goldman,InstitutionalClientServicesMember,markets_dealmaking,Institutional Client Services (to 2016)
+goldman,InvestmentBankingMember,markets_dealmaking,Investment Banking (to 2019)
+goldman,InvestingAndLendingMember,banking_lending,Investing and Lending (to 2016)
+goldman,InvestmentManagementMember,wealth_asset_management,Investment Management (to 2016)
+goldman,GlobalMarketsMember,markets_dealmaking,Global Markets (2017 to 2019)
+goldman,AssetManagementMember,wealth_asset_management,Asset Management (2017 to 2019); includes principal investing
+goldman,ConsumerAndWealthManagementMember,wealth_asset_management,Consumer and Wealth Management (2017 to 2019); includes Marcus consumer lending
+goldman,GlobalBankingAndMarketsMember,markets_dealmaking,Global Banking and Markets (from 2020 in recast figures)
+goldman,AssetAndWealthManagementMember,wealth_asset_management,Asset and Wealth Management (from 2020 in recast figures)
+goldman,PlatformSolutionsMember,banking_lending,Platform Solutions: consumer cards and transaction banking (from 2020)
+goldman,InstitutionalClientServicesCommissionsAndFeesMember,detail,Sub-line of Institutional Client Services: not added
+goldman,InstitutionalClientServicesEquitiesClientExecutionMember,detail,Sub-line: not added
+goldman,InstitutionalClientServicesEquitiesMember,detail,Sub-line: not added
+goldman,InstitutionalClientServicesFixedIncomeCurrencyAndCommoditiesClientExecutionMember,detail,Sub-line: not added
+goldman,InstitutionalClientServicesSecuritiesServicesMember,detail,Sub-line: not added
+goldman,InvestingAndLendingDebtSecuritiesAndLoansMember,detail,Sub-line: not added
+goldman,InvestingAndLendingEquitySecuritiesMember,detail,Sub-line: not added
+goldman,InvestmentBankingDebtUnderwritingMember,detail,Sub-line: not added
+goldman,InvestmentBankingEquityUnderwritingMember,detail,Sub-line: not added
+goldman,InvestmentBankingFinancialAdvisoryMember,detail,Sub-line: not added
+goldman,InvestmentBankingUnderwritingMember,detail,Sub-line: not added
+goldman,InvestmentManagementIncentiveFeesMember,detail,Sub-line: not added
+goldman,InvestmentManagementManagementAndOtherFeesMember,detail,Sub-line: not added
+goldman,InvestmentManagementTransactionRevenuesMember,detail,Sub-line: not added
+morgan_stanley,InstitutionalSecuritiesSegmentMember,markets_dealmaking,Institutional Securities
+morgan_stanley,WealthManagementSegmentMember,wealth_asset_management,Wealth Management (E*TRADE from Q4 2020)
+morgan_stanley,InvestmentManagementSegmentMember,wealth_asset_management,Investment Management (Eaton Vance from Q1 2021)

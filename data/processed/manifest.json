@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "fundamentals": {
+      "updated": "2026-11-26T15:35:16Z",
+      "outputs": [
+        {
+          "file": "fundamentals_quarterly.csv",
+          "rows": 660
+        }
+      ]
+    },
+    "fred": {
+      "updated": "2026-11-26T15:35:16Z",
+      "outputs": [
+        {
+          "file": "fred_daily.csv",
+          "rows": 20158
+        },
+        {
+          "file": "fred_quarterly.csv",
+          "rows": 345
+        }
+      ]
+    },
+    "aum": {
+      "updated": "2026-11-26T15:35:17Z",
+      "outputs": [
+        {
+          "file": "aum.csv",
+          "rows": 97
+        }
+      ]
+    },
+    "segments": {
+      "updated": "2026-11-26T15:35:24Z",
+      "outputs": [
+        {
+          "file": "bank_segments_annual.csv",
+          "rows": 362
+        }
+      ]
+    },
+    "holdings": {
+      "updated": "2026-11-26T15:36:45Z",
+      "outputs": [
+        {
+          "file": "holdings_13f_top500.csv",
+          "rows": 66000
+        },
+        {
+          "file": "holdings_13f_totals.csv",
+          "rows": 132
+        }
+      ]
+    }
+  },
+  "period": {
+    "start": "2015-01-01",
+    "end": "2025-12-31"
+  }
+}
