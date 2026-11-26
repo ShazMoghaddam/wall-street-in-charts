@@ -15,10 +15,12 @@ dependencies = [
   "requests>=2.32",
   "lxml>=5.2",
   "pyyaml>=6.0",
+  "bezel-charts>=1.11.0",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "ruff>=0.6"]
+notebooks = ["jupyterlab>=4.2"]
 
 [project.urls]
 Homepage = "https://shazmoghaddam.github.io/"
@@ -40,3 +42,5 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.ruff.lint.per-file-ignores]
 # Inline XML fixtures read better unwrapped.
 "tests/test_parsers.py" = ["E501"]
+# Long f-strings of findings text read better unbroken.
+"findings/build.py" = ["E501"]

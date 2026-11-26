@@ -28,7 +28,12 @@ QUARTER_DAYS = (80, 100)
 NINE_MONTH_DAYS = (260, 285)
 YEAR_DAYS = (350, 380)
 
-DURATION_METRICS = {"net_income": ("NetIncomeLoss",)}
+DURATION_METRICS = {
+    "net_income": ("NetIncomeLoss",),
+    # Interest earned minus interest paid. Banks and State Street only:
+    # BlackRock does not report it.
+    "net_interest_income": ("InterestIncomeExpenseNet",),
+}
 INSTANT_METRICS = {"total_assets": ("Assets",)}
 
 
