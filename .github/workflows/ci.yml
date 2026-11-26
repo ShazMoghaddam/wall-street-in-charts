@@ -29,3 +29,8 @@ jobs:
 
       - name: Test (offline, uses committed data/processed)
         run: pytest -q
+
+      - name: Charts and findings are up to date
+        run: |
+          python findings/build.py
+          git diff --exit-code -- charts findings README.md

@@ -9,7 +9,33 @@ Six Wall Street giants, told through their SEC filings from 2015 to 2025, with f
 - **Banks:** JPMorgan Chase, Goldman Sachs, Morgan Stanley
 - **Fund managers:** BlackRock, Vanguard, State Street
 
-> **Status:** stage 1 of 5. The data pipeline is built. Findings, holdings analysis, forecasts and the report site come next.
+> **Status:** stage 2 of 5. Data pipeline and history findings are done. Holdings and sectors, forecasts and the report site come next.
+
+> 📈 **Every chart here is drawn with [bezel-charts](https://pypi.org/project/bezel-charts/), an open-source Python
+> library created by Shaz Moghaddam, the author of this project.** It turns pandas data into clean, self-contained
+> SVG charts in one line. `pip install bezel-charts` · [PyPI](https://pypi.org/project/bezel-charts/) ·
+> [GitHub](https://github.com/ShazMoghaddam/bezel-charts)
+
+<!-- findings:start -->
+## Headline findings so far
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f1-revenue-dark.svg">
+  <img src="charts/f1-revenue-light.svg" alt="Revenue by year · $bn: 5 series over 11 points" width="760">
+</picture>
+
+1. **[Who grew biggest](findings/01-who-grew-biggest.md):** JPMorgan's revenue nearly doubled to $182.4bn, but Goldman grew profit fastest (2.8× its 2015 level). BlackRock's AUM tripled to $14.0 trillion.
+2. **[Where the banks make money](findings/02-where-banks-make-money.md):** Goldman still earns 71% of revenue from markets; Morgan Stanley now earns most of its revenue (54%) from wealth.
+3. **[Rates rose in 2022](findings/07-rates-and-profits.md):** JPMorgan's net interest income jumped 71% from 2021 to 2023, while Goldman's profit fell 61%.
+4. **[Shocks](findings/08-shocks.md):** the pandemic cut JPMorgan's first-half profit by 60%; the 2023 bank failures lifted it 60%.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/f7-profit-and-rates-dark.svg">
+  <img src="charts/f7-profit-and-rates-light.svg" alt="Quarterly profit and the Fed's interest rate: 2 bar series and 1 line over 28 points" width="760">
+</picture>
+
+Findings 3 to 6 (holdings and sectors) and 9 (forecasts) arrive in later stages.
+<!-- findings:end -->
 
 ## The questions
 
@@ -39,7 +65,8 @@ cd wall-street-in-charts
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 cp .env.example .env   # add your SEC contact email and FRED API key
-python data/fetch.py
+python data/fetch.py      # download and tidy the data
+python findings/build.py  # charts, findings pages and the README block
 pytest
 ```
 
@@ -47,11 +74,14 @@ pytest
 
 ```
 data/        fetch script, firm settings, hand-made tables, processed CSVs
-wallstreet/  pipeline code (SEC, 13F, segments, AUM, FRED)
-tests/       unit tests and checks on the processed data
+wallstreet/  pipeline, findings and chart code
+findings/    one page per finding, built by findings/build.py
+charts/      every chart as SVG, in light and dark
+notebooks/   walk-throughs of the analysis
+tests/       unit tests and checks on the data and the findings
 ```
 
-`charts/`, `findings/`, `notebooks/` and `models/` arrive in later stages.
+`models/` arrives with the forecasts in stage 4.
 
 ## Not financial advice
 

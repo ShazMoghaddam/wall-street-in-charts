@@ -16,7 +16,7 @@ You need two secrets in a local `.env` file (see `.env.example`): `SEC_CONTACT_E
 
 | Source | What we take | Firms |
 | --- | --- | --- |
-| SEC XBRL company facts | Quarterly revenue, net income, total assets | JPMorgan, Goldman, Morgan Stanley, BlackRock, State Street |
+| SEC XBRL company facts | Quarterly revenue, net income, total assets, net interest income | JPMorgan, Goldman, Morgan Stanley, BlackRock, State Street |
 | SEC 10-K XBRL filings | Revenue and profit by business segment (yearly) | The three banks |
 | SEC 8-K earnings releases | Assets under management (AUM) each quarter | BlackRock, State Street |
 | Vanguard's own figures | AUM at the dates Vanguard published it | Vanguard |
@@ -31,7 +31,7 @@ One row per firm, metric and quarter, 2015Q1 to 2025Q4.
 | Column | Meaning |
 | --- | --- |
 | `firm` | Firm key (see `firms.yaml`) |
-| `metric` | `revenue`, `net_income` or `total_assets` |
+| `metric` | `revenue`, `net_income`, `total_assets` or `net_interest_income` (banks and State Street) |
 | `quarter` | e.g. `2020Q3` |
 | `value_usd` | US dollars |
 | `tag` | XBRL tag used (first in the firm's priority list with a value) |

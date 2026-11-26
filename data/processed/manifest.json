@@ -1,11 +1,11 @@
 {
   "steps": {
     "fundamentals": {
-      "updated": "2026-11-26T15:35:16Z",
+      "updated": "2026-11-26T15:50:40Z",
       "outputs": [
         {
           "file": "fundamentals_quarterly.csv",
-          "rows": 660
+          "rows": 836
         }
       ]
     },
@@ -23,11 +23,11 @@
       ]
     },
     "aum": {
-      "updated": "2026-11-26T15:35:17Z",
+      "updated": "2026-11-26T15:55:41Z",
       "outputs": [
         {
           "file": "aum.csv",
-          "rows": 97
+          "rows": 99
         }
       ]
     },
