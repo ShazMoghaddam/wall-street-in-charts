@@ -9,7 +9,7 @@ Six Wall Street giants, told through their SEC filings from 2015 to 2025, with f
 - **Banks:** JPMorgan Chase, Goldman Sachs, Morgan Stanley
 - **Fund managers:** BlackRock, Vanguard, State Street
 
-> **Status:** stage 3 of 5. Data, history findings and holdings findings are done. Forecasts and the report site come next.
+> **Status:** stage 4 of 5. Data, all nine findings and the forecasts are done. The report site comes next.
 
 > 📈 **Every chart here is drawn with [bezel-charts](https://pypi.org/project/bezel-charts/), an open-source Python
 > library created by Shaz Moghaddam, the author of this project.** It turns pandas data into clean, self-contained
@@ -17,7 +17,7 @@ Six Wall Street giants, told through their SEC filings from 2015 to 2025, with f
 > [GitHub](https://github.com/ShazMoghaddam/bezel-charts)
 
 <!-- findings:start -->
-## Headline findings so far
+## Headline findings
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="charts/f1-revenue-dark.svg">
@@ -33,12 +33,12 @@ Six Wall Street giants, told through their SEC filings from 2015 to 2025, with f
 7. **[Rates rose in 2022](findings/07-rates-and-profits.md):** JPMorgan's net interest income jumped 71% from 2021 to 2023, while Goldman's profit fell 61%.
 8. **[Shocks](findings/08-shocks.md):** the pandemic cut JPMorgan's first-half profit by 60%; the 2023 bank failures lifted it 60%.
 
+9. **[Scenarios to 2035](findings/09-scenarios.md):** in the middling case JPMorgan's profit reaches $75.0bn by 2035 (range $49.5bn to $109.5bn). In a backtest trained to 2020, what happened in 2021-2025 fell inside the range 78% of the time. *Not financial advice.*
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="charts/f6-market-share-dark.svg">
   <img src="charts/f6-market-share-light.svg" alt="Share of all US public company shares · %: 3 series stacked over 44 points" width="760">
 </picture>
-
-Finding 9 (scenarios to 2030 and 2035) arrives with the forecasts in stage 4.
 <!-- findings:end -->
 
 ## The questions
@@ -70,6 +70,7 @@ python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 cp .env.example .env   # add your SEC contact email and FRED API key
 python data/fetch.py      # download and tidy the data
+python models/run.py      # forecasts and backtest
 python findings/build.py  # charts, findings pages and the README block
 pytest
 ```
@@ -81,15 +82,14 @@ data/        fetch script, firm settings, hand-made tables, processed CSVs
 wallstreet/  pipeline, findings and chart code
 findings/    one page per finding, built by findings/build.py
 charts/      every chart as SVG, in light and dark
+models/      forecast run script and its outputs (scenarios, backtest, settings)
 notebooks/   walk-throughs of the analysis
 tests/       unit tests and checks on the data and the findings
 ```
 
-`models/` arrives with the forecasts in stage 4.
-
 ## Not financial advice
 
-This is an independent data project. Nothing here is investment advice or a recommendation to buy or sell anything.
+This is an independent data project. Nothing here is investment advice or a recommendation to buy or sell anything. The scenarios to 2035 are illustrations from a simple model, not predictions.
 
 ## Licence
 

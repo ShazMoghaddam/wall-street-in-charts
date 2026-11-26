@@ -1,0 +1,11 @@
+{
+  "seed": 20251231,
+  "simulations": 10000,
+  "block_quarters": 4,
+  "driver_window": "1990Q1-2025Q4",
+  "history": "2015Q1-2025Q4",
+  "horizon": "2035Q4",
+  "rate_long_run_mean": 2.027,
+  "rate_pull_per_quarter": 0.036,
+  "market_growth_per_year_history": 0.0931
+}

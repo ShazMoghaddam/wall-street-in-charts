@@ -406,6 +406,110 @@ def page_share(n: dict, alts: dict, base: str) -> str:
     return "\n".join(lines) + "\n"
 
 
+def page_scenarios(n: dict, alts: dict, base: str) -> str:
+    def rng(firm: str, metric: str, year: int) -> str:
+        return (
+            f"{bn(n[f'{firm}_{metric}_{year}_bad_bn'])} (bad), "
+            f"{bn(n[f'{firm}_{metric}_{year}_middling_bn'])} (middling) and "
+            f"{bn(n[f'{firm}_{metric}_{year}_good_bn'])} (good)"
+        )
+
+    below = [F.short_name(f) for f in n["profit_2035_bad_below_2025"]]
+    below_text = ", ".join(below[:-1]) + " and " + below[-1] if len(below) > 1 else below[0]
+    lines = [
+        "# 9. Good, middling and bad scenarios to 2030 and 2035",
+        "",
+        "> **Not financial advice.** These are illustrations from a deliberately simple model, "
+        "not predictions or recommendations. The future will not look like any single line here.",
+        "",
+        "Each firm is linked by a simple model to the things that move it: the stock market, "
+        "interest rates and market volatility. We then run 10,000 simulated futures for those "
+        "drivers, built from real stretches of history since 1990 (including the 2000, 2008, "
+        "2020 and 2022 shocks), and push each one through the firm models. **Bad, middling and "
+        "good are the 10th, 50th and 90th percentiles** of the results: 1 in 10 futures came "
+        "out worse than 'bad', and 1 in 10 better than 'good'.",
+        "",
+        picture("f9-profit-2035", alts["f9-profit-2035"], 760, base),
+        "",
+        f"- **JPMorgan stays far ahead.** Its 2035 profit comes out at "
+        f"{rng('jpmorgan', 'net_income', 2035)}, against {bn(n['jpmorgan_net_income_2025_bn'])} "
+        f"in 2025.",
+        f"- **The range is wide, and that is the honest answer.** In the bad case, 2035 profit is "
+        f"below its 2025 level for {below_text}.",
+        f"- **Goldman and Morgan Stanley have the widest ranges** relative to their size, "
+        f"because trading and dealmaking swing with markets. Goldman's 2035 profit: "
+        f"{rng('goldman', 'net_income', 2035)}.",
+        f"- **BlackRock's AUM** reaches ${n['blackrock_aum_2035_middling_tn']:.0f} trillion in "
+        f"the middling case (from ${n['blackrock_aum_2025_tn']:.0f} trillion), with a range of "
+        f"${n['blackrock_aum_2035_bad_tn']:.0f} to ${n['blackrock_aum_2035_good_tn']:.0f} "
+        f"trillion.",
+        "",
+        " ".join(
+            picture(
+                f"f9-profit-{f.replace('_', '-')}",
+                alts[f"f9-profit-{f.replace('_', '-')}"],
+                372,
+                base,
+            )
+            for f in F.LISTED
+        ),
+        "",
+        picture("f9-aum-blackrock", alts["f9-aum-blackrock"], 372, base),
+        picture("f9-aum-state-street", alts["f9-aum-state-street"], 372, base),
+        "",
+        "## The drivers",
+        "",
+        f"In the middling case the US stock market's total value grows about as fast as it did "
+        f"from 1990 to 2025 (about {pct(n['market_growth_per_year_history'])} a year, including "
+        f"new listings), reaching "
+        f"{n['market_2035_middling'] / 100:.1f} times its 2025 level by 2035. The bad case is "
+        f"{n['market_2035_bad'] / 100:.1f} times and the good case {n['market_2035_good'] / 100:.1f} "
+        f"times. The Fed funds rate is pulled back towards its long-run level, about "
+        f"{n['rate_long_run_mean']:.0f}% as estimated from 1990-2025, with real surprises along the way.",
+        "",
+        picture("f9-market", alts["f9-market"], 372, base),
+        picture("f9-rates", alts["f9-rates"], 372, base),
+        "",
+        "## Backtest: how close did it get?",
+        "",
+        "We trained the same models on 2015 to 2020 only, then asked them about 2021 to 2025.",
+        "",
+        f"- **With the real market and rates fed in**, yearly revenue was off by "
+        f"{pct(n['backtest_revenue_error_min'])} to {pct(n['backtest_revenue_error_max'])} on "
+        f"average. Profit is harder: from {pct(n['jpmorgan_backtest_profit_error'])} for JPMorgan "
+        f"to {pct(n['goldman_backtest_profit_error'])} for Goldman, whose 2021 deal boom and 2023 "
+        f"slump no simple model would call.",
+        f"- **With everything simulated**, what actually happened landed inside the bad-to-good "
+        f"range {pct(n['backtest_inside_share'])} of the time. A well-judged 10th-to-90th range "
+        f"should catch about 80%.",
+        "",
+        picture("f9-backtest", alts["f9-backtest"], 760, base),
+        "",
+        picture("f9-backtest-error", alts["f9-backtest-error"], 372, base),
+        "",
+        "## How the models work",
+        "",
+        "- **Banks:** net interest income follows interest rates and the size of the market; "
+        "other revenue (trading, deals, wealth) follows the market and volatility, with "
+        "quarter-of-year effects; profit margin follows rates and volatility.",
+        "- **Fund managers:** AUM follows the market plus a steady trend (new client money); "
+        "revenue follows AUM and rates; profit margin follows rates and volatility.",
+        "- **Errors are simulated too.** Each model's leftover error persists from quarter to "
+        "quarter, as it does in real life, so the range reflects how wrong the model has been.",
+        "- **Vanguard is left out:** its 11 published AUM figures are too few for a model.",
+        "- Everything is in `wallstreet/forecast.py`; outputs and settings (including the fixed "
+        "random seed) are in `models/`.",
+        "",
+        "## Limits",
+        "",
+        "- Ten years is a long way. Mergers (like BlackRock's 2024 and 2025 deals), new rules "
+        "or a new business line can change a firm in ways no driver captures.",
+        "- 'Good' and 'bad' describe profit and AUM, not whether an outcome is good for anyone else.",
+        "- The models are deliberately simple so that every link can be read and checked.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
 PAGES = [
     ("01-who-grew-biggest.md", page_growth),
     ("02-where-banks-make-money.md", page_segments),
@@ -415,6 +519,7 @@ PAGES = [
     ("06-big-three-share.md", page_share),
     ("07-rates-and-profits.md", page_rates),
     ("08-shocks.md", page_shocks),
+    ("09-scenarios.md", page_scenarios),
 ]
 
 
@@ -424,7 +529,7 @@ def readme_block(n: dict, alts: dict) -> str:
     return "\n".join(
         [
             START,
-            "## Headline findings so far",
+            "## Headline findings",
             "",
             picture("f1-revenue", alts["f1-revenue"], 760),
             "",
@@ -455,9 +560,14 @@ def readme_block(n: dict, alts: dict) -> str:
             f"profit by {pct(-n['jpmorgan_covid_change_pct'])}; the 2023 bank failures lifted it "
             f"{pct(n['jpmorgan_banks_change_pct'])}.",
             "",
-            picture("f6-market-share", alts["f6-market-share"], 760),
+            f"9. **[Scenarios to 2035](findings/09-scenarios.md):** in the middling case "
+            f"JPMorgan's profit reaches {bn(n['jpmorgan_net_income_2035_middling_bn'])} by 2035 "
+            f"(range {bn(n['jpmorgan_net_income_2035_bad_bn'])} to "
+            f"{bn(n['jpmorgan_net_income_2035_good_bn'])}). In a backtest trained to 2020, what "
+            f"happened in 2021-2025 fell inside the range {pct(n['backtest_inside_share'])} of "
+            f"the time. *Not financial advice.*",
             "",
-            "Finding 9 (scenarios to 2030 and 2035) arrives with the forecasts in stage 4.",
+            picture("f6-market-share", alts["f6-market-share"], 760),
             END,
         ]
     )

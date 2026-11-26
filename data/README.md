@@ -85,6 +85,9 @@ Value and share in oil, gas and coal (`oil_gas_coal`, the Energy sector) and in 
 ### `big_three_stakes.csv`
 For each year-end, the Big Three's ~500 largest company holdings: combined and per-firm shares, the company's shares outstanding, and `stake` (combined shares / shares outstanding).
 
+### `drivers_quarterly.csv`
+The forecast drivers, quarterly from 1990 to 2025: `market_value_usd` (Fed Z.1 total value of US public company shares at quarter end), `fed_funds` and `vix` (quarterly averages of daily values). Used by `models/run.py`.
+
 ### `manifest.json`
 When each step last ran and how many rows it wrote.
 

@@ -7,6 +7,7 @@ DataFrame; `headline_numbers()` collects the figures the text quotes.
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from functools import cache
 
@@ -278,6 +279,8 @@ def headline_numbers() -> dict:
         out[f"stress_days_{year}"] = int(stress_days(year).sum())
     if (PROCESSED / "holdings_by_sector.csv").exists():
         out.update(headline_numbers_holdings())
+    if (MODELS / "forecast_annual.csv").exists():
+        out.update(headline_numbers_forecast())
     return out
 
 
@@ -438,4 +441,97 @@ def headline_numbers_holdings() -> dict:
         out[f"top{i}_stake"] = row.stake
     cov = mapped_share()
     out["mapped_share_min"] = cov[FUND_MANAGERS].min().min()
+    return out
+
+
+# Finding 9: scenarios ---------------------------------------------------------
+
+MODELS = PROCESSED.parent.parent / "models"
+SCENARIOS = ["bad", "middling", "good"]
+
+
+@cache
+def forecast_table() -> pd.DataFrame:
+    return pd.read_csv(MODELS / "forecast_annual.csv")
+
+
+@cache
+def backtest_table() -> pd.DataFrame:
+    return pd.read_csv(MODELS / "backtest_annual.csv")
+
+
+@cache
+def driver_scenarios() -> pd.DataFrame:
+    return pd.read_csv(MODELS / "drivers_annual.csv").set_index("year")
+
+
+def scenario_paths(firm: str, metric: str) -> pd.DataFrame:
+    """Years as rows, bad / middling / good as columns ($bn).
+
+    History (to 2025) is copied into all three so the lines share it and then
+    split; this is how the charts show 'history, then three futures'.
+    """
+    df = forecast_table()
+    df = df[(df["firm"] == firm) & (df["metric"] == metric)].set_index("year")
+    hist = df["actual"].dropna()
+    future = df[SCENARIOS].dropna()
+    out = pd.DataFrame({s: pd.concat([hist, future[s]]) for s in SCENARIOS})
+    return out
+
+
+def backtest_summary() -> pd.DataFrame:
+    """Average absolute error (%) and share of years inside the range, per firm and metric."""
+    b = backtest_table()
+    return b.groupby(["firm", "metric"]).agg(
+        error=("error_pct", lambda x: x.abs().mean()),
+        inside=("inside_range", "mean"),
+        actual_total=("actual", "sum"),
+        predicted_total=("predicted_with_real_drivers", "sum"),
+    )
+
+
+def headline_numbers_forecast() -> dict:
+    out: dict = {}
+    for firm in LISTED:
+        for metric in ("revenue", "net_income"):
+            p = scenario_paths(firm, metric)
+            for year in (2030, 2035):
+                for s in SCENARIOS:
+                    out[f"{firm}_{metric}_{year}_{s}_bn"] = float(p.loc[year, s])
+            out[f"{firm}_{metric}_2025_bn"] = float(p.loc[2025, "middling"])
+    for firm in ("blackrock", "state_street"):
+        p = scenario_paths(firm, "aum")
+        out[f"{firm}_aum_2025_tn"] = float(p.loc[2025, "middling"]) / 1000
+        for s in SCENARIOS:
+            out[f"{firm}_aum_2035_{s}_tn"] = float(p.loc[2035, s]) / 1000
+    d = driver_scenarios()
+    for s in SCENARIOS:
+        out[f"market_2035_{s}"] = float(d.loc[2035, f"market_{s}"])
+        out[f"rate_2035_{s}"] = float(d.loc[2035, f"rate_{s}"])
+    b = backtest_table()
+    s = backtest_summary()
+    out["backtest_inside_share"] = float(b["inside_range"].mean())
+    out["backtest_revenue_error_min"] = float(s.xs("revenue", level="metric")["error"].min())
+    out["backtest_revenue_error_max"] = float(s.xs("revenue", level="metric")["error"].max())
+    for firm in LISTED:
+        out[f"{firm}_backtest_profit_error"] = float(s.loc[(firm, "net_income"), "error"])
+    err = s.xs("net_income", level="metric")["error"]
+    out["backtest_profit_best"] = err.idxmin()
+    out["backtest_profit_worst"] = err.idxmax()
+    settings = json.loads((MODELS / "settings.json").read_text())
+    out["rate_long_run_mean"] = float(settings["rate_long_run_mean"])
+    out["market_growth_per_year_history"] = float(settings["market_growth_per_year_history"])
+    width = {
+        firm: (out[f"{firm}_net_income_2035_good_bn"] - out[f"{firm}_net_income_2035_bad_bn"])
+        / out[f"{firm}_net_income_2035_middling_bn"]
+        for firm in LISTED
+    }
+    out["widest_ranges"] = sorted(width, key=width.get, reverse=True)[:2]
+    profit_2035 = {firm: out[f"{firm}_net_income_2035_middling_bn"] for firm in LISTED}
+    out["profit_2035_bad_below_2025"] = [
+        firm
+        for firm in LISTED
+        if out[f"{firm}_net_income_2035_bad_bn"] < out[f"{firm}_net_income_2025_bn"]
+    ]
+    out["profit_2035_leader"] = max(profit_2035, key=profit_2035.get)
     return out

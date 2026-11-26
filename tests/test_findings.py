@@ -73,7 +73,7 @@ def test_every_firm_has_its_own_colour():
 
 def test_charts_build_in_both_themes():
     charts = C.build_all()
-    assert len(charts) == 31
+    assert len(charts) == 43
     for themes in charts.values():
         assert set(themes) == set(C.THEMES)
         assert str(themes["light"]) != str(themes["dark"])
@@ -133,3 +133,37 @@ def test_median_stake_rose(n):
 def test_sector_weights_add_up():
     for who in ["big_three", "market", "vanguard"]:
         assert F.sector_weights(who).sum(axis=1).round(6).eq(1).all()
+
+
+# Finding 9 ----------------------------------------------------------------------
+
+
+def test_scenarios_are_ordered(n):
+    for firm in F.LISTED:
+        for year in (2030, 2035):
+            bad, mid, good = (n[f"{firm}_net_income_{year}_{s}_bn"] for s in F.SCENARIOS)
+            assert bad < mid < good
+
+
+def test_jpmorgan_stays_far_ahead(n):
+    assert n["profit_2035_leader"] == "jpmorgan"
+
+
+def test_widest_ranges_are_goldman_and_morgan_stanley(n):
+    assert set(n["widest_ranges"]) == {"goldman", "morgan_stanley"}
+
+
+def test_backtest_range_is_well_judged(n):
+    # A 10th-to-90th range should catch about 80% of outcomes.
+    assert 0.65 <= n["backtest_inside_share"] <= 0.95
+
+
+def test_backtest_profit_extremes(n):
+    assert n["backtest_profit_best"] == "jpmorgan"
+    assert n["backtest_profit_worst"] == "goldman"
+
+
+def test_scenario_history_matches_data():
+    p = F.scenario_paths("jpmorgan", "revenue")
+    actual = F.yearly("revenue")["jpmorgan"] / 1e9
+    assert p.loc[2015:2025, "middling"].round(1).tolist() == actual.round(1).tolist()

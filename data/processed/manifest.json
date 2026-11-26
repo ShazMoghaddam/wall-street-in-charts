@@ -85,6 +85,15 @@
           "rows": 5500
         }
       ]
+    },
+    "drivers": {
+      "updated": "2026-11-26T18:32:57Z",
+      "outputs": [
+        {
+          "file": "drivers_quarterly.csv",
+          "rows": 144
+        }
+      ]
     }
   },
   "period": {

@@ -5,6 +5,14 @@ All notable changes to this project are listed here. The format follows [Keep a 
 ## [Unreleased]
 
 ### Added
+- Finding 9: good, middling and bad scenarios to 2030 and 2035 for revenue, profit and AUM, from driver models and 10,000 Monte Carlo futures built from real 1990-2025 history.
+- Backtest: models trained on 2015-2020 predict 2021-2025, with real drivers and fully simulated.
+- `models/run.py` and `wallstreet/forecast.py`, with a fixed seed so results repeat; CI checks the committed outputs match a fresh run.
+- 12 more charts in light and dark (scenario lines, 2035 profit, drivers, backtest).
+- Notebook `notebooks/04_forecasts.ipynb` and `models/README.md`.
+
+### Fixed
+- Bullet chart legends now name what the bar and the mark show (they read "Actual" and "Target").
 - Holdings findings 3 to 6: where the fund managers invest, whether they choose or follow the market, energy holdings since 2015, and the Big Three's share of the US stock market.
 - Sector mapping for 13F holdings: SEC company match, SIC code to 11 sectors, hand checks for the largest holdings, ETFs kept apart. At least 95% of value mapped in every quarter.
 - The institutional "market" from the SEC's bulk 13F data, one year-end per year, with unit-slip checks against the Big Three's prices.
