@@ -448,6 +448,9 @@ def headline_numbers_holdings() -> dict:
 
 MODELS = PROCESSED.parent.parent / "models"
 SCENARIOS = ["bad", "middling", "good"]
+# Every saved percentile, low to high: the fan charts draw bad..good (80% of
+# outcomes) and p25..p75 (50% of outcomes) around the middling path.
+FAN = ["bad", "p25", "middling", "p75", "good"]
 
 
 @cache
@@ -466,16 +469,16 @@ def driver_scenarios() -> pd.DataFrame:
 
 
 def scenario_paths(firm: str, metric: str) -> pd.DataFrame:
-    """Years as rows, bad / middling / good as columns ($bn).
+    """Years as rows, bad / p25 / middling / p75 / good as columns ($bn).
 
-    History (to 2025) is copied into all three so the lines share it and then
-    split; this is how the charts show 'history, then three futures'.
+    History (to 2025) is copied into every column so the paths share it and
+    then split; the fan charts start their bands from the last actual year.
     """
     df = forecast_table()
     df = df[(df["firm"] == firm) & (df["metric"] == metric)].set_index("year")
     hist = df["actual"].dropna()
-    future = df[SCENARIOS].dropna()
-    out = pd.DataFrame({s: pd.concat([hist, future[s]]) for s in SCENARIOS})
+    future = df[FAN].dropna()
+    out = pd.DataFrame({s: pd.concat([hist, future[s]]) for s in FAN})
     return out
 
 

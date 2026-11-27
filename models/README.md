@@ -25,17 +25,17 @@ The code lives in [`wallstreet/forecast.py`](../wallstreet/forecast.py). The ran
    | Fund managers | profit margin | Fed funds rate, log VIX |
 
    Each model's leftover error follows an AR(1) process (it persists from one quarter to the next) and is simulated alongside the drivers.
-3. **Scenarios.** Bad, middling and good are the 10th, 50th and 90th percentiles of the 10,000 outcomes, year by year.
+3. **Scenarios.** Bad, middling and good are the 10th, 50th and 90th percentiles of the 10,000 outcomes, year by year. The 25th and 75th (`p25`, `p75`) are saved too: the fan charts shade 50% of outcomes between them and 80% between bad and good.
 4. **Backtest.** The same models trained on 2015 to 2020 predict 2021 to 2025, once with the real drivers fed in (testing the firm models) and once fully simulated (testing whether reality lands inside the range).
 
 ## Files
 
 | File | What it holds |
 | --- | --- |
-| `forecast_annual.csv` | `firm`, `metric` (`revenue`, `net_income`, `aum`), `year`, `actual` to 2025, then `bad`, `middling`, `good` to 2035. $ billions. Revenue and profit are yearly totals; AUM is the year-end value. |
-| `backtest_annual.csv` | 2021 to 2025: `actual`, `predicted_with_real_drivers`, the simulated `bad` / `middling` / `good`, `error_pct` and `inside_range`. |
+| `forecast_annual.csv` | `firm`, `metric` (`revenue`, `net_income`, `aum`), `year`, `actual` to 2025, then `bad`, `p25`, `middling`, `p75`, `good` to 2035. $ billions. Revenue and profit are yearly totals; AUM is the year-end value. |
+| `backtest_annual.csv` | 2021 to 2025: `actual`, `predicted_with_real_drivers`, the simulated `bad` / `p25` / `middling` / `p75` / `good`, `error_pct` and `inside_range`. |
 | `model_terms.csv` | Every equation's coefficients, R², error persistence and number of quarters. |
-| `drivers_annual.csv` | Simulated market level (average for the year, end-2025 = 100) and Fed funds rate (yearly average), at the 10th, 50th and 90th percentiles. |
+| `drivers_annual.csv` | Simulated market level (average for the year, end-2025 = 100) and Fed funds rate (yearly average), at the 10th, 25th, 50th, 75th and 90th percentiles. |
 | `settings.json` | Seed, number of simulations, block length, windows, the rate's long-run level and speed, and the market's 1990-2025 growth rate. |
 
 ## Limits

@@ -2,6 +2,25 @@
 
 All notable changes to this project are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [semantic versioning](https://semver.org/).
 
+## [1.1.0] - 2026-11-27
+
+Forecasts are now fan charts, drawn with the new bands option in Bezel Charts 1.12.0.
+
+### Changed
+- Finding 9's nine forecast charts (profit for the five listed firms, AUM for BlackRock and State Street, the US market and the Fed funds rate) are fan charts instead of three scenario lines. A solid line shows what happened, a dashed line the central forecast, a darker band 50% of simulated outcomes and a lighter band 80% (bad to good). Each firm keeps its own colour.
+- The forecast run also saves the 25th and 75th percentiles (`p25`, `p75`) in `forecast_annual.csv`, `backtest_annual.csv` and `drivers_annual.csv`. The seed is unchanged, so every existing number is the same.
+- Finding 9 explains how to read the fan charts.
+- Shorter headings on the market and rate charts, which were cut off at the edge.
+- State Street's profit chart shows one decimal place, so its axis no longer repeats "$3bn".
+- Requires `bezel-charts>=1.12.0`. The package version in `pyproject.toml` now matches the release (it still read 0.1.0).
+
+### Accessibility
+- The fan charts get their own alt text with the actual, central and range values for 2035. The default summary counted the years before the forecast as "missing", which sounded like a data gap.
+
+### Tests
+- Percentiles are saved in order (bad ≤ p25 ≤ middling ≤ p75 ≤ good) for every forecast, backtest and driver year.
+- All nine fan charts have two bands and plain alt text.
+
 ## [1.0.0] - 2026-11-26
 
 The full report: nine findings on six Wall Street giants (JPMorgan, Goldman Sachs, Morgan Stanley, BlackRock, Vanguard, State Street) from SEC filings, 2015 to 2025, with scenarios to 2035. Built in five stages.

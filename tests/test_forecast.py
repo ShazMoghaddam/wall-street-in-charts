@@ -51,3 +51,29 @@ def test_quarter_helpers():
     assert FC.future_quarters("2025Q4", "2026Q2") == ["2026Q1", "2026Q2"]
     t = FC.trend(["2015Q1", "2016Q1"])
     assert t.tolist() == [0.0, 1.0]
+
+
+def test_fan_percentiles_are_saved_in_order():
+    """Every forecast year has bad <= p25 <= middling <= p75 <= good, for the fan charts."""
+    for path in ("forecast_annual.csv", "backtest_annual.csv"):
+        df = pd.read_csv(PROCESSED.parent.parent / "models" / path).dropna(subset=["middling"])
+        cols = ["bad", "p25", "middling", "p75", "good"]
+        assert (df[cols].diff(axis=1).iloc[:, 1:] >= 0).all().all(), path
+    drv = pd.read_csv(PROCESSED.parent.parent / "models" / "drivers_annual.csv")
+    for d in ("market", "rate"):
+        cols = [f"{d}_{s}" for s in ("bad", "p25", "middling", "p75", "good")]
+        assert (drv[cols].diff(axis=1).iloc[:, 1:] >= 0).all().all(), d
+
+
+def test_fan_charts_have_two_bands_and_plain_alt_text():
+    from wallstreet import charts as C
+
+    fans = {**C.profit_fans("light"), **C.aum_fans("light")}
+    fans["f9-market"] = C.market_fan("light")
+    fans["f9-rates"] = C.rate_fan("light")
+    assert len(fans) == 9
+    for name, chart in fans.items():
+        assert len(chart.options["bands"]) == 2, name
+        alt = C.ALTS[name]
+        assert "Fan chart" in alt and "50% of outcomes" in alt and "80%" in alt, name
+        assert "missing" not in alt, name
