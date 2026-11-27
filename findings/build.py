@@ -422,7 +422,7 @@ def page_scenarios(n: dict, alts: dict, base: str) -> str:
         "# 9. Good, middling and bad scenarios to 2030 and 2035",
         "",
         "> **Not financial advice.** These are illustrations from a deliberately simple model, "
-        "not predictions or recommendations. The future will not look like any single line here.",
+        "not predictions or recommendations. The future will not follow any single path here.",
         "",
         "Each firm is linked by a simple model to the things that move it: the stock market, "
         "interest rates and market volatility. We then run 10,000 simulated futures for those "
@@ -445,6 +445,11 @@ def page_scenarios(n: dict, alts: dict, base: str) -> str:
         f"the middling case (from ${n['blackrock_aum_2025_tn']:.0f} trillion), with a range of "
         f"${n['blackrock_aum_2035_bad_tn']:.0f} to ${n['blackrock_aum_2035_good_tn']:.0f} "
         f"trillion.",
+        "",
+        "**How to read the fan charts.** The solid line is what happened. From 2025 the dashed "
+        "line is the central forecast (the middling case). The darker band holds the middle half "
+        "of the simulated futures, and the lighter band holds 8 in 10 of them, from bad to good. "
+        "The wider the fan, the less certain the outlook.",
         "",
         " ".join(
             picture(
@@ -613,7 +618,7 @@ def main() -> None:
     for name, themes in C.build_all().items():
         for theme, chart in themes.items():
             chart.save(str(CHARTS / f"{name}-{theme}.svg"))
-        alts[name] = themes["light"].alt
+        alts[name] = C.ALTS.get(name, themes["light"].alt)
     print(f"wrote {len(alts) * 2} charts to charts/")
 
     numbers = F.headline_numbers()

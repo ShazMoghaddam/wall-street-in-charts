@@ -683,53 +683,137 @@ NAMES.update(
 
 
 # Finding 9: scenarios ---------------------------------------------------------
+#
+# Forecasts are fan charts: the outer band holds 80% of simulated outcomes
+# (bad to good, the 10th to 90th percentile), the inner band 50% (25th to
+# 75th) and the dashed line is the central forecast (the median, "middling").
+
+FAN_LABELS = {
+    "actual": "Actual",
+    "central": "Central forecast",
+    "outer": "80% of outcomes",
+    "inner": "50% of outcomes",
+}
+DRIVER_COLOUR = {"market": 2, "rate": 4}  # palette index; firm colours stay on the firms
+
+# Alt text written for the fan charts, by chart name. Bezel Charts' own summary
+# counts the years before the forecast starts as missing values, which reads
+# like a data gap to a screen reader, so these spell out the numbers instead.
+ALTS: dict[str, str] = {}
 
 
-def scenario_colours(firm: str | None, theme: str) -> list[str]:
-    """Bad, good, middling (drawn last so the shared history shows its colour)."""
-    t = bc.themes[theme]
-    middle = palette(theme)[FIRM_COLOUR[firm]] if firm else palette(theme)[0]
-    return [t["down"], t["up"], middle]
+def fan_alt(heading: str, paths: pd.DataFrame, fmt: Callable[[float], str], actual: bool) -> str:
+    end = paths.loc[paths.index.max()]
+    first, start = paths.index.min(), 2025
+    parts = [f"{heading}. Fan chart."]
+    if actual:
+        parts.append(
+            f"Actual: {fmt(paths.loc[first, 'middling'])} in {first}, "
+            f"{fmt(paths.loc[start, 'middling'])} in {start}."
+        )
+    else:
+        parts.append(f"Starts at {fmt(paths.loc[start, 'middling'])} in {start}.")
+    parts.append(
+        f"Central forecast for {paths.index.max()}: {fmt(end['middling'])}. "
+        f"50% of outcomes between {fmt(end['p25'])} and {fmt(end['p75'])}; "
+        f"80% between {fmt(end['bad'])} and {fmt(end['good'])}."
+    )
+    return " ".join(parts)
 
 
-def scenario_line(firm: str, metric: str, theme: str, width: int = HALF) -> bc.Chart:
+def soften(colour: str, theme: str, amount: float = 0.45) -> str:
+    """Mix a colour towards the tile background, for the outer band of a fan."""
+    tile = bc.themes[theme]["tile"]
+    a = [int(colour[i : i + 2], 16) for i in (1, 3, 5)]
+    b = [int(tile[i : i + 2], 16) for i in (1, 3, 5)]
+    return "#" + "".join(f"{round(x + (y - x) * amount):02X}" for x, y in zip(a, b, strict=True))
+
+
+def fan_frame(paths: pd.DataFrame, start: int = 2025) -> pd.DataFrame:
+    """Actual line to the start year, then the central forecast and both bands from it.
+
+    paths has years as rows and bad / p25 / middling / p75 / good as columns,
+    with history copied into all of them up to the start year.
+    """
+    years = paths.index
+    df = pd.DataFrame(index=years)
+    df[FAN_LABELS["actual"]] = paths["middling"].where(years <= start)
+    df[FAN_LABELS["central"]] = paths["middling"].where(years >= start)
+    for col in F.FAN:
+        df[col] = paths[col].where(years >= start)
+    df.index = df.index.astype(str)
+    return df
+
+
+def fan_chart(
+    paths: pd.DataFrame, colour: str, theme: str, actual: bool = True, **options
+) -> bc.Chart:
+    """A fan chart; actual=False for the simulated drivers, which start at 2025."""
+    lines = [FAN_LABELS["actual"], FAN_LABELS["central"]] if actual else [FAN_LABELS["central"]]
+    return bc.line(
+        fan_frame(paths),
+        y=lines,
+        bands=[
+            {
+                "name": FAN_LABELS["outer"],
+                "low": "bad",
+                "high": "good",
+                "color": soften(colour, theme),
+            },
+            {"name": FAN_LABELS["inner"], "low": "p25", "high": "p75", "color": colour},
+        ],
+        stat="none",
+        dash=["solid", "dashed"][-len(lines) :],
+        color=[colour] * len(lines),
+        theme=theme,
+        **options,
+    )
+
+
+def firm_fan(firm: str, metric: str, theme: str, width: int = HALF) -> bc.Chart:
     p = F.scenario_paths(firm, metric)
     if metric == "aum":
         p = (p / 1000).round(2)
         unit, label, decimals = "T", "AUM", 1
     else:
-        p = p.round(1)
-        unit, label, decimals = "bn", "profit" if metric == "net_income" else "revenue", 0
-    p = p[["bad", "good", "middling"]]
-    p.columns = ["Bad", "Good", "Middling"]
-    p.index = p.index.astype(str)
-    return bc.line(
+        # Small firms get a decimal place, so the axis doesn't repeat "$3bn".
+        small = p["good"].max() < 10
+        p = p.round(2 if small else 1)
+        unit, decimals = "bn", 1 if small else 0
+        label = "profit" if metric == "net_income" else "revenue"
+    heading = f"{F.short_name(firm)} · {label} to 2035 · ${unit}"
+    name = f"f9-{'aum' if metric == 'aum' else 'profit'}-{firm.replace('_', '-')}"
+    ALTS[name] = fan_alt(heading, p, lambda v: f"${v:,.{1 if v < 10 else decimals}f}{unit}", True)
+    return fan_chart(
         p,
-        heading=f"{F.short_name(firm)} · {label} to 2035 · ${unit}",
+        palette(theme)[FIRM_COLOUR[firm]],
+        theme,
+        heading=heading,
         prefix="$",
         suffix=unit,
         decimals=decimals,
-        stat="none",
-        dash=["dashed", "dashed", "solid"],
-        color=scenario_colours(firm, theme),
         notes={"2025": "Forecast starts"},
-        theme=theme,
         width=width,
         height=300,
     )
 
 
-def profit_scenario_lines(theme: str) -> dict[str, bc.Chart]:
-    return {
-        f"f9-profit-{f.replace('_', '-')}": scenario_line(f, "net_income", theme) for f in F.LISTED
-    }
+def profit_fans(theme: str) -> dict[str, bc.Chart]:
+    return {f"f9-profit-{f.replace('_', '-')}": firm_fan(f, "net_income", theme) for f in F.LISTED}
 
 
-def aum_scenario_lines(theme: str) -> dict[str, bc.Chart]:
+def aum_fans(theme: str) -> dict[str, bc.Chart]:
     return {
-        f"f9-aum-{f.replace('_', '-')}": scenario_line(f, "aum", theme)
+        f"f9-aum-{f.replace('_', '-')}": firm_fan(f, "aum", theme)
         for f in ("blackrock", "state_street")
     }
+
+
+def driver_paths(driver: str, start_value: float) -> pd.DataFrame:
+    d = F.driver_scenarios()
+    df = pd.DataFrame({s: d[f"{driver}_{s}"] for s in F.FAN})
+    df.loc[2025] = start_value
+    return df.sort_index()
 
 
 def profit_2035_bars(theme: str) -> bc.Chart:
@@ -759,46 +843,37 @@ def profit_2035_bars(theme: str) -> bc.Chart:
     )
 
 
-def market_scenarios(theme: str) -> bc.Chart:
-    d = F.driver_scenarios()
-    df = pd.DataFrame(
-        {"Bad": d["market_bad"], "Good": d["market_good"], "Middling": d["market_middling"]}
-    )
-    df.loc[2025] = 100.0
-    df = df.sort_index()
-    df.index = df.index.astype(str)
-    return bc.line(
-        df.round(0),
-        heading="US stock market value in the simulations · 2025 = 100",
+def market_fan(theme: str) -> bc.Chart:
+    p = driver_paths("market", 100.0).round(0)
+    heading = "US market value · 2025 = 100"
+    ALTS["f9-market"] = fan_alt(heading, p, lambda v: f"{v:,.0f}", actual=False)
+    return fan_chart(
+        p,
+        palette(theme)[DRIVER_COLOUR["market"]],
+        theme,
+        actual=False,
+        heading=heading,
         decimals=0,
-        stat="none",
-        dash=["dashed", "dashed", "solid"],
-        color=scenario_colours(None, theme),
-        theme=theme,
         width=HALF,
         height=300,
     )
 
 
-def rate_scenarios(theme: str) -> bc.Chart:
-    d = F.driver_scenarios()
+def rate_fan(theme: str) -> bc.Chart:
     rate = F.fed_funds_quarterly()
     last = float(rate.loc["2025Q1":"2025Q4"].mean())
-    df = pd.DataFrame({"Low": d["rate_bad"], "High": d["rate_good"], "Middle": d["rate_middling"]})
-    df.loc[2025] = last
-    df = df.sort_index().round(2)
-    df.index = df.index.astype(str)
-    p = palette(theme)
-    return bc.line(
-        df,
-        heading="Fed funds rate in the simulations · yearly average %",
+    p = driver_paths("rate", last).round(2)
+    heading = "Fed funds rate · yearly average %"
+    ALTS["f9-rates"] = fan_alt(heading, p, lambda v: f"{v:.1f}%", actual=False)
+    return fan_chart(
+        p,
+        palette(theme)[DRIVER_COLOUR["rate"]],
+        theme,
+        actual=False,
+        heading=heading,
         suffix="%",
         decimals=1,
-        stat="none",
         zero=True,
-        dash=["dashed", "dashed", "solid"],
-        color=[p[4], p[5], p[3]],
-        theme=theme,
         width=HALF,
         height=300,
     )
@@ -855,19 +930,19 @@ def backtest_error_bars(theme: str) -> bc.Chart:
 
 
 BUILDERS += [
-    profit_scenario_lines,
-    aum_scenario_lines,
+    profit_fans,
+    aum_fans,
     profit_2035_bars,
-    market_scenarios,
-    rate_scenarios,
+    market_fan,
+    rate_fan,
     backtest_bullets,
     backtest_error_bars,
 ]
 NAMES.update(
     {
         profit_2035_bars: "f9-profit-2035",
-        market_scenarios: "f9-market",
-        rate_scenarios: "f9-rates",
+        market_fan: "f9-market",
+        rate_fan: "f9-rates",
         backtest_bullets: "f9-backtest",
         backtest_error_bars: "f9-backtest-error",
     }

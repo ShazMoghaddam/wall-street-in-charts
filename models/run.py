@@ -5,7 +5,7 @@ Usage (from the repo root):
     python models/run.py
 
 Writes to models/:
-- forecast_annual.csv: history and bad / middling / good to 2035 ($ billions)
+- forecast_annual.csv: history and bad / p25 / middling / p75 / good to 2035 ($ billions)
 - backtest_annual.csv: 2021-2025 predictions from models trained on 2015-2020
 - model_terms.csv: every equation's coefficients, fit (R²) and error persistence
 - drivers_annual.csv: simulated market level (2025 = 100) and Fed funds rate
@@ -27,7 +27,7 @@ sys.path.insert(0, str(ROOT))
 from wallstreet import forecast  # noqa: E402
 
 OUT = ROOT / "models"
-MONEY = ["actual", "bad", "middling", "good", "predicted_with_real_drivers"]
+MONEY = ["actual", "bad", "p25", "middling", "p75", "good", "predicted_with_real_drivers"]
 
 
 def to_billions(df):

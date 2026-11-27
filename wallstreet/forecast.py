@@ -22,7 +22,10 @@ Two layers:
    so the range reflects how wrong the model has been, not just the drivers.
 
 The 10th, 50th and 90th percentiles of the simulated outcomes are the bad,
-middling and good scenarios. The random seed is fixed, so results repeat.
+middling and good scenarios. The 25th and 75th percentiles (p25, p75) are
+saved too: with bad and good they make the two bands of the fan charts, where
+the inner band holds 50% of outcomes and the outer band 80%. The random seed
+is fixed, so results repeat.
 
 Not financial advice: these are illustrations of a simple model.
 """
@@ -44,7 +47,7 @@ BACKTEST_TRAIN = ("2015Q1", "2020Q4")
 BACKTEST_TEST = ("2021Q1", "2025Q4")
 DRIVER_WINDOW = ("1990Q1", "2025Q4")
 HORIZON = "2035Q4"
-PERCENTILES = {"bad": 10, "middling": 50, "good": 90}
+PERCENTILES = {"bad": 10, "p25": 25, "middling": 50, "p75": 75, "good": 90}
 
 BANKS = ["jpmorgan", "goldman", "morgan_stanley"]
 FUND_MANAGERS = ["blackrock", "state_street"]
